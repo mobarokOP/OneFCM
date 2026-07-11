@@ -26,7 +26,15 @@ jobs:
             cd /www/wwwroot/BETA_KATHGOLAP
             
             echo "Pulling latest code from main branch..."
-            git pull origin main
+            if [ ! -d ".git" ]; then
+              echo "Git repository not found. Initializing..."
+              git init
+              git remote add origin https://github.com/mobarokOP/OpenFCM.git
+            fi
+            
+            # Fetch the latest and reset to avoid merge conflicts
+            git fetch origin main
+            git reset --hard origin/main
             
             # =================================================================
             # DEPLOYMENT SCRIPT
