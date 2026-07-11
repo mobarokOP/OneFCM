@@ -25,6 +25,9 @@ jobs:
             echo "Navigating to project directory..."
             cd /www/wwwroot/BETA_KATHGOLAP
             
+            echo "Configuring git safe directory to prevent ownership errors..."
+            git config --global --add safe.directory /www/wwwroot/BETA_KATHGOLAP
+            
             echo "Pulling latest code from main branch..."
             if [ ! -d ".git" ]; then
               echo "Git repository not found. Initializing..."
