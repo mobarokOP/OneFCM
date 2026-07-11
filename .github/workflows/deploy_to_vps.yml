@@ -50,31 +50,33 @@ jobs:
             # section below and remove the Docker section.
             # =================================================================
             
-            # --- DOCKER DEPLOYMENT (Active) ---
-            echo "Rebuilding containers and restarting services..."
-            docker compose build
-            docker compose up -d --remove-orphans
+            # --- DOCKER DEPLOYMENT (Commented Out) ---
+            # echo "Rebuilding containers and restarting services..."
+            # docker compose build
+            # docker compose up -d --remove-orphans
+            # 
+            # echo "Running database migrations..."
+            # docker compose exec -T app php artisan migrate --force
+            # 
+            # echo "Clearing and caching Laravel config..."
+            # docker compose exec -T app php artisan optimize:clear
+            
+            # --- NATIVE aaPanel DEPLOYMENT (Active) ---
+            cd backend
+            echo "Installing PHP dependencies..."
+            composer install --no-dev --optimize-autoloader
             
             echo "Running database migrations..."
-            docker compose exec -T app php artisan migrate --force
+            php artisan migrate --force
             
-            echo "Clearing and caching Laravel config..."
-            docker compose exec -T app php artisan optimize:clear
+            echo "Optimizing Laravel..."
+            php artisan optimize:clear
+            cd ..
             
-            # --- NATIVE aaPanel DEPLOYMENT (Commented Out) ---
-            # echo "Installing PHP dependencies..."
-            # composer install --no-dev --optimize-autoloader
-            #
-            # echo "Running database migrations..."
-            # php artisan migrate --force
-            #
-            # echo "Optimizing Laravel..."
-            # php artisan optimize:clear
-            #
-            # echo "Building Frontend..."
-            # cd dashboard
-            # npm install
-            # npm run build
-            # cd ..
+            echo "Building Frontend..."
+            cd dashboard
+            npm install
+            npm run build
+            cd ..
             
             echo "Deployment completed successfully!"
