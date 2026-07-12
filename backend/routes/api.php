@@ -102,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Notifications (admin views)
     Route::get('/apps/{appId}/notifications', [NotificationController::class, 'index']);
     Route::get('/apps/{appId}/notifications/{id}', [NotificationController::class, 'adminShow']);
+    Route::delete('/apps/{appId}/notifications/{id}', [NotificationController::class, 'destroy']);
     Route::post('/apps/{appId}/notifications/{id}/cancel', [NotificationController::class, 'cancel']);
 
     // Delivery logs

@@ -40,15 +40,11 @@ class FcmMessage
             'op_collapse_key' => $n->collapse_key,
         ], fn ($v) => $v !== null && $v !== '');
 
-        $androidNotification = array_filter([
-            'title' => $n->title,
-            'body' => $n->body,
-            'image' => $n->image_url,
-            'icon' => $n->small_icon,
-            'channel_id' => $n->channel_id,
-            'click_action' => $n->deep_link ? 'OPENFCM_DEEPLINK' : null,
-        ], fn ($v) => $v !== null && $v !== '');
-
+        // DATA-ONLY message (no `notification` block), OneSignal-style: this way
+        // onMessageReceived always runs — even in the background — so the SDK
+        // renders the notification itself and taps go through the trampoline
+        // (tracking + deep links). With a `notification` block, background
+        // messages are displayed by the system and taps just open the launcher.
         return array_filter([
             'token' => $token,
             'data' => $data ?: null,
@@ -56,7 +52,6 @@ class FcmMessage
                 'priority' => $n->priority === 'high' ? 'HIGH' : 'NORMAL',
                 'ttl' => $n->ttl.'s',
                 'collapse_key' => $n->collapse_key,
-                'notification' => $androidNotification ?: null,
             ], fn ($v) => $v !== null),
         ], fn ($v) => $v !== null);
     }

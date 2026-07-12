@@ -123,6 +123,23 @@ class NotificationController extends Controller
         return $this->collection($paginator);
     }
 
+    /** Delete a past notification (history cleanup). Cascades logs/targets. */
+    public function destroy(Request $request, string $appId, string $id): JsonResponse
+    {
+        $app = $this->appForAdmin($request, $appId);
+        $n = $app->notifications()->findOrFail($id);
+
+        if (in_array($n->status, ['queued', 'sending'], true)) {
+            return response()->json([
+                'error' => ['code' => 'in_flight', 'message' => 'Cancel the notification before deleting it.'],
+            ], 422);
+        }
+
+        $n->delete();
+
+        return response()->json(null, 204);
+    }
+
     public function cancel(Request $request, string $appId, string $id): JsonResponse
     {
         $app = $this->appForAdmin($request, $appId);

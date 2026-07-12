@@ -21,4 +21,7 @@ export const notificationsApi = {
   async cancel(appId: string, id: string): Promise<void> {
     await api.post(`/apps/${appId}/notifications/${id}/cancel`)
   },
+  async remove(appId: string, id: string): Promise<void> {
+    await api.delete(`/apps/${appId}/notifications/${id}`)
+  },
 }

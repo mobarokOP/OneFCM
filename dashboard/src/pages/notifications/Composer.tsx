@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -15,10 +15,21 @@ import { Badge } from '@/components/ui/Badge'
 import { cn, formatNumber } from '@/lib/utils'
 import type { AudienceType, CreateNotificationPayload } from '@/types'
 
+/** Prefill values, e.g. when duplicating an existing notification. */
+export interface ComposerInitial {
+  title?: string | null
+  body?: string | null
+  image_url?: string | null
+  deep_link?: string | null
+  priority?: 'high' | 'normal' | string | null
+  data?: Record<string, unknown> | null
+}
+
 interface ComposerProps {
   open: boolean
   onClose: () => void
   appId: string
+  initial?: ComposerInitial | null
 }
 
 interface KV {
@@ -35,7 +46,7 @@ const audienceOptions: { value: AudienceType; label: string; hint: string }[] = 
   { value: 'topic', label: 'Topic', hint: 'A subscription topic' },
 ]
 
-export function Composer({ open, onClose, appId }: ComposerProps) {
+export function Composer({ open, onClose, appId, initial }: ComposerProps) {
   const qc = useQueryClient()
   const navigate = useNavigate()
 
@@ -56,6 +67,22 @@ export function Composer({ open, onClose, appId }: ComposerProps) {
 
   const [scheduleMode, setScheduleMode] = useState<'now' | 'later'>('now')
   const [sendAt, setSendAt] = useState('')
+
+  // Prefill when duplicating an existing notification.
+  useEffect(() => {
+    if (!open || !initial) return
+    setTitle(initial.title ?? '')
+    setBody(initial.body ?? '')
+    setImageUrl(initial.image_url ?? '')
+    setDeepLink(initial.deep_link ?? '')
+    setPriority(initial.priority === 'normal' ? 'normal' : 'high')
+    setData(
+      Object.entries(initial.data ?? {}).map(([key, value]) => ({
+        key,
+        value: typeof value === 'string' ? value : JSON.stringify(value),
+      })),
+    )
+  }, [open, initial])
 
   const segments = useQuery({
     queryKey: ['segments', appId],

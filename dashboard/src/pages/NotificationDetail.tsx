@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { ArrowLeft, Ban, Send, CheckCircle2, XCircle, MousePointerClick, Image as ImageIcon } from 'lucide-react'
+import { ArrowLeft, Ban, Copy, Send, CheckCircle2, XCircle, MousePointerClick, Image as ImageIcon } from 'lucide-react'
 import { notificationsApi } from '@/api/notifications'
 import { logsApi } from '@/api/logs'
 import { getErrorMessage } from '@/api/client'
@@ -91,6 +91,28 @@ export default function NotificationDetail() {
           actions={
             <div className="flex items-center gap-2">
               {n && <StatusBadge status={n.status} />}
+              {n && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() =>
+                    navigate('/notifications', {
+                      state: {
+                        duplicate: {
+                          title: n.title,
+                          body: n.body,
+                          image_url: n.image_url,
+                          deep_link: n.deep_link,
+                          priority: n.priority,
+                          data: n.data,
+                        },
+                      },
+                    })
+                  }
+                >
+                  <Copy className="h-4 w-4" /> Duplicate
+                </Button>
+              )}
               {cancelable && (
                 <Button variant="danger" size="sm" loading={cancel.isPending} onClick={() => cancel.mutate()}>
                   <Ban className="h-4 w-4" /> Cancel
