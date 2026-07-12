@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ScrollText } from 'lucide-react'
+import { Info, ScrollText } from 'lucide-react'
 import { notificationsApi } from '@/api/notifications'
 import { logsApi } from '@/api/logs'
 import { useCurrentApp } from '@/hooks/useApps'
@@ -120,6 +120,13 @@ export default function Logs() {
             />
             {(logs.data?.meta.total ?? 0) > 0 && (
               <Pagination page={page} perPage={logs.data?.meta.per_page ?? 20} total={logs.data?.meta.total ?? 0} onPageChange={setPage} />
+            )}
+            {(logs.data?.meta.total ?? 0) > 0 && !!logs.data?.meta.retention?.delivery_log_days && (
+              <p className="flex items-center gap-1.5 border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
+                <Info className="h-3.5 w-3.5 shrink-0" />
+                Per-device delivery logs are retained for {logs.data.meta.retention.delivery_log_days} days;
+                summary stats stay on the notification.
+              </p>
             )}
           </>
         )}

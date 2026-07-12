@@ -101,5 +101,12 @@ Single source of truth for backend, dashboard, and Android SDK. All parts build 
 4. Failures: exponential backoff retry (max 3). `UNREGISTERED`/`INVALID_ARGUMENT` → mark device inactive, no retry.
 5. Scheduler (`schedule:run` every minute) promotes due `schedules` to dispatch.
 
+## History retention (free tier)
+Enforced nightly by `openfcm:prune-history` (03:30, via `schedule:run`). Env-configurable; `0` disables a rule.
+- Last **30** finished (`sent|failed|canceled`) notifications kept per app (`OPENFCM_RETENTION_NOTIFICATIONS_PER_APP`). Draft/queued/scheduled/sending rows are never pruned. FK cascades clean targets, logs and schedules of pruned rows.
+- Per-device `delivery_logs` + `notification_targets` kept **30 days** (`OPENFCM_RETENTION_DELIVERY_LOG_DAYS`); aggregate counters on the notification survive.
+- `analytics_events` kept **90 days** (`OPENFCM_RETENTION_ANALYTICS_DAYS`).
+- List endpoints expose the limits in `meta.retention` (`notifications_per_app`, `delivery_log_days`) so the dashboard can render the policy.
+
 ## DB tables
 applications, api_keys, accounts, admin_users, devices, users, tags, device_tags, topics, topic_subscriptions, notifications, notification_targets, delivery_logs, schedules, analytics_events, audit_logs.

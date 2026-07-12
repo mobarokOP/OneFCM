@@ -120,7 +120,12 @@ class NotificationController extends Controller
             ->paginate($request->integer('per_page', 20))
             ->through(fn (Notification $n) => $this->present($n));
 
-        return $this->collection($paginator);
+        return $this->collection($paginator, [
+            'retention' => [
+                'notifications_per_app' => (int) config('openfcm.retention.notifications_per_app'),
+                'delivery_log_days' => (int) config('openfcm.retention.delivery_log_days'),
+            ],
+        ]);
     }
 
     /** Delete a past notification (history cleanup). Cascades logs/targets. */

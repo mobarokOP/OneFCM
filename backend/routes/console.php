@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Promote due scheduled notifications every minute.
 Schedule::command('openfcm:dispatch-scheduled')->everyMinute()->withoutOverlapping();
+
+// Enforce free-tier history retention nightly (keep-last-N per app + time-boxed logs).
+Schedule::command('openfcm:prune-history')->dailyAt('03:30')->withoutOverlapping()->onOneServer();

@@ -2,6 +2,11 @@ export interface ListMeta {
   page: number
   per_page: number
   total: number
+  /** History limits enforced by the server (absent on endpoints without retention). */
+  retention?: {
+    notifications_per_app?: number
+    delivery_log_days?: number
+  }
 }
 
 export interface Paginated<T> {

@@ -21,6 +21,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | History retention (free-tier friendly)
+    |--------------------------------------------------------------------------
+    | Keeps the database light: each app retains only its most recent finished
+    | notifications, and raw per-device rows expire after a fixed window.
+    | Aggregate counters on the kept notifications survive forever.
+    | Enforced daily by `openfcm:prune-history`. Set a value to 0 to disable
+    | that prune. Draft/queued/scheduled/sending notifications are never pruned.
+    */
+    'retention' => [
+        // Finished (sent|failed|canceled) notifications kept per application.
+        'notifications_per_app' => (int) env('OPENFCM_RETENTION_NOTIFICATIONS_PER_APP', 30),
+
+        // Days of per-device delivery logs + target rows to keep.
+        'delivery_log_days' => (int) env('OPENFCM_RETENTION_DELIVERY_LOG_DAYS', 30),
+
+        // Days of raw analytics events to keep (dashboard charts read these).
+        'analytics_days' => (int) env('OPENFCM_RETENTION_ANALYTICS_DAYS', 90),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Central Firebase project (OneSignal-style)
     |--------------------------------------------------------------------------
     | One Firebase project shared by every app so client Android apps need only

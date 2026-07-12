@@ -17,15 +17,15 @@ abstract class Controller
     }
 
     /** Standard collection envelope with pagination meta. */
-    protected function collection(LengthAwarePaginator $p): JsonResponse
+    protected function collection(LengthAwarePaginator $p, array $meta = []): JsonResponse
     {
         return response()->json([
             'data' => $p->items(),
-            'meta' => [
+            'meta' => array_merge([
                 'page' => $p->currentPage(),
                 'per_page' => $p->perPage(),
                 'total' => $p->total(),
-            ],
+            ], $meta),
         ]);
     }
 

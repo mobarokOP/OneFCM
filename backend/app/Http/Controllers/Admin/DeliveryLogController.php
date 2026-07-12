@@ -21,7 +21,7 @@ class DeliveryLogController extends Controller
             $query->where('status', $status);
         }
 
-        return $this->collection($this->paginate($request, $query));
+        return $this->collection($this->paginate($request, $query), $this->retentionMeta());
     }
 
     /** All logs across an app. */
@@ -37,7 +37,16 @@ class DeliveryLogController extends Controller
             $query->where('status', $status);
         }
 
-        return $this->collection($this->paginate($request, $query));
+        return $this->collection($this->paginate($request, $query), $this->retentionMeta());
+    }
+
+    private function retentionMeta(): array
+    {
+        return [
+            'retention' => [
+                'delivery_log_days' => (int) config('openfcm.retention.delivery_log_days'),
+            ],
+        ];
     }
 
     private function paginate(Request $request, $query)

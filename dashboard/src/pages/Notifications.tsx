@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Send, Plus, Trash2, Copy, Image as ImageIcon } from 'lucide-react'
+import { Send, Plus, Trash2, Copy, Image as ImageIcon, Info } from 'lucide-react'
 import { notificationsApi } from '@/api/notifications'
 import { getErrorMessage } from '@/api/client'
 import { useCurrentApp } from '@/hooks/useApps'
@@ -185,6 +185,13 @@ export default function Notifications() {
                 total={query.data?.meta.total ?? 0}
                 onPageChange={setPage}
               />
+            )}
+            {(query.data?.meta.total ?? 0) > 0 && !!query.data?.meta.retention?.notifications_per_app && (
+              <p className="flex items-center gap-1.5 border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
+                <Info className="h-3.5 w-3.5 shrink-0" />
+                Free retention: your last {query.data.meta.retention.notifications_per_app} finished
+                notifications are kept — older ones are cleaned up automatically.
+              </p>
             )}
           </>
         )}
