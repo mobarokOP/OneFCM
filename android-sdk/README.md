@@ -56,7 +56,7 @@ dependencyResolutionManagement {
 
 // app/build.gradle.kts
 dependencies {
-    implementation("com.github.mobarokOP.OpenFCM:openpush:1.0.0")
+    implementation("com.github.mobarokOP:OpenFCM:1.0.0")
     // Firebase Messaging is exposed transitively (api) by the SDK.
 }
 ```
