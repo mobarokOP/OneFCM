@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Account;
 use App\Models\AdminUser;
 use App\Models\Application;
+use App\Services\Fcm\FirebaseManagement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -103,7 +104,7 @@ class PushPipelineTest extends TestCase
         [$token] = $this->actingAdmin();
 
         // Mock the Firebase Management API integration.
-        $mock = $this->createMock(\App\Services\Fcm\FirebaseManagement::class);
+        $mock = $this->createMock(FirebaseManagement::class);
         $mock->method('deriveClientConfig')->willReturn([
             'project_id' => 'acme-proj',
             'project_number' => '987654321',
@@ -112,7 +113,7 @@ class PushPipelineTest extends TestCase
             'storage_bucket' => 'acme-proj.appspot.com',
             'package_name' => 'com.acme.app',
         ]);
-        $this->app->instance(\App\Services\Fcm\FirebaseManagement::class, $mock);
+        $this->app->instance(FirebaseManagement::class, $mock);
 
         $sa = [
             'type' => 'service_account',

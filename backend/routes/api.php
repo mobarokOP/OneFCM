@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Sdk\DeviceController as SdkDeviceController;
 use App\Http\Controllers\Sdk\EventController;
+use App\Http\Controllers\Sdk\FcmConfigController;
 use App\Http\Controllers\Sdk\TagController;
 use App\Http\Controllers\Sdk\TopicController as SdkTopicController;
 use App\Http\Controllers\Sdk\UserSessionController;
@@ -39,7 +40,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 */
 Route::middleware('resolve.app')->group(function () {
     // Firebase client config for runtime init (no google-services.json needed).
-    Route::get('/fcm-config', [\App\Http\Controllers\Sdk\FcmConfigController::class, 'show']);
+    Route::get('/fcm-config', [FcmConfigController::class, 'show']);
 
     Route::post('/devices/register', [SdkDeviceController::class, 'register']);
     Route::patch('/devices/token', [SdkDeviceController::class, 'updateToken']);
