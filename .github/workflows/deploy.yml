@@ -14,13 +14,14 @@
 #   DEPLOY_SSH_KEY      private key for the above user
 #   DEPLOY_PATH         remote path containing docker-compose.yml + .env
 # =============================================================================
-name: Deploy
+name: Deploy (Docker registry)
 
+# Manual-only. Production actually deploys natively via `deploy_to_vps.yml`.
+# This Docker-image build/push path is kept for optional container rollouts and
+# must be run deliberately (and only after the REGISTRY/DEPLOY secrets below are
+# set) — otherwise the registry login step fails. Trigger from the Actions tab.
 on:
-  push:
-    tags: ["v*.*.*"]
-  release:
-    types: [published]
+  workflow_dispatch:
 
 # Least-privilege token; `packages: write` is needed only for GHCR.
 permissions:
