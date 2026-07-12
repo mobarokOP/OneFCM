@@ -3,7 +3,16 @@
 return [
     'paths' => ['v1/*', 'api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['https://beta.kathgolap.online', 'http://beta.kathgolap.online', 'http://localhost:5173'],
+    'allowed_origins' => [
+        // OneFCM production
+        'https://dashboard.onefcm.com',
+        'https://onefcm.com',
+        // Legacy beta deployment
+        'https://beta.kathgolap.online',
+        'http://beta.kathgolap.online',
+        // Local development
+        'http://localhost:5173',
+    ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
