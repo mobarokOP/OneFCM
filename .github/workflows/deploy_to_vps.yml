@@ -66,7 +66,12 @@ jobs:
             cd dashboard
             npm install
             echo "VITE_API_BASE=https://admin.onefcm.com/v1" > .env
-            npm run build
+            # aaPanel drops an immutable .user.ini inside dist/ (the site root),
+            # which crashes vite's emptyOutDir. Build to a scratch dir and sync
+            # the result into dist/, leaving .user.ini untouched.
+            npm run build -- --outDir build_out --emptyOutDir
+            rsync -a --delete --exclude='.user.ini' build_out/ dist/
+            rm -rf build_out
             cd ..
 
             # --- LANDING (onefcm.com -> landing/) ---
