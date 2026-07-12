@@ -1,4 +1,5 @@
 <?php
+
 return [
     'paths' => ['v1/*', 'api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
