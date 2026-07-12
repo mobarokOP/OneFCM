@@ -71,6 +71,9 @@ jobs:
             
             echo "Optimizing Laravel..."
             php artisan optimize:clear
+            # Rebuild the config/route/view caches — without this every request
+            # re-parses all config and routes, which is the main API slowdown.
+            php artisan optimize
 
             # Tell any running queue workers to reload the new code.
             php artisan queue:restart || true
