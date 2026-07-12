@@ -45,6 +45,10 @@
     font-feature-settings: 'cv11', 'ss01';
   }
 
+  ::selection {
+    background: hsl(var(--primary) / 0.18);
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -53,13 +57,40 @@
     @apply bg-border rounded-full;
     border: 2px solid hsl(var(--background));
   }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
 }
 
 @layer utilities {
+  /* Shimmering skeleton: static base + gradient sweep. */
   .skeleton {
-    @apply animate-pulse rounded-md bg-muted;
+    @apply relative isolate overflow-hidden rounded-md bg-muted;
+  }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 animate-shimmer;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--foreground) / 0.06),
+      transparent
+    );
+  }
+}
+
+/* Accessibility: collapse animations and transitions for users who opt out
+   of motion. Entrance animations resolve instantly to their final frame. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

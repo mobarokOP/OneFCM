@@ -61,15 +61,16 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
             className="fixed inset-0 z-[60] flex items-center justify-center p-4"
             onKeyDown={(e) => e.key === 'Escape' && close(false)}
           >
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => close(false)} aria-hidden />
+            <div className="fixed inset-0 animate-fade-in bg-black/50 backdrop-blur-sm" onClick={() => close(false)} aria-hidden />
             <div
               role="alertdialog"
               aria-modal="true"
-              className="relative z-10 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl"
+              className="relative z-10 w-full max-w-sm animate-scale-in rounded-2xl border border-border bg-card p-6 shadow-overlay"
             >
               <div
                 className={cn(
-                  'mx-auto flex h-12 w-12 items-center justify-center rounded-full',
+                  'mx-auto flex h-12 w-12 items-center justify-center rounded-full ring-8',
+                  tone === 'danger' ? 'ring-red-500/5' : 'ring-primary/5',
                   tone === 'danger' ? 'bg-red-500/10 text-red-500' : 'bg-primary/10 text-primary',
                 )}
               >

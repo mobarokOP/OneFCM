@@ -23,11 +23,14 @@ export function Table<T>({ columns, rows, rowKey, onRowClick, empty }: TableProp
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-border text-left">
+          <tr className="border-b border-border bg-muted/40 text-left">
             {columns.map((c) => (
               <th
                 key={c.key}
-                className={cn('whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground', c.className)}
+                className={cn(
+                  'whitespace-nowrap px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground',
+                  c.className,
+                )}
               >
                 {c.header}
               </th>
@@ -47,8 +50,8 @@ export function Table<T>({ columns, rows, rowKey, onRowClick, empty }: TableProp
                 key={rowKey(row)}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
                 className={cn(
-                  'border-b border-border/60 transition-colors last:border-0',
-                  onRowClick && 'cursor-pointer hover:bg-muted/50',
+                  'border-b border-border/60 transition-[background-color,transform] duration-150 ease-out last:border-0 hover:bg-muted/50',
+                  onRowClick && 'cursor-pointer hover:translate-x-0.5 active:bg-muted/70',
                 )}
               >
                 {columns.map((c) => (
@@ -78,14 +81,14 @@ export function Pagination({ page, perPage, total, onPageChange }: PaginationPro
   const to = Math.min(page * perPage, total)
   return (
     <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground">
-      <span>
+      <span className="tabular-nums">
         {from}–{to} of {total}
       </span>
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
           <ChevronLeft className="h-4 w-4" /> Prev
         </Button>
-        <span className="px-1 text-foreground">
+        <span className="px-1 tabular-nums text-foreground">
           {page} / {pages}
         </span>
         <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => onPageChange(page + 1)}>

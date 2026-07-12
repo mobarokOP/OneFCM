@@ -1,10 +1,17 @@
 import type { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
-export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function Card({ className, onClick, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('rounded-2xl border border-border bg-card text-card-foreground shadow-card', className)}
+      onClick={onClick}
+      className={cn(
+        'rounded-2xl border border-border bg-card text-card-foreground shadow-card',
+        // Clickable cards get a subtle lift on hover.
+        onClick &&
+          'cursor-pointer transition-[box-shadow,transform,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-muted-foreground/25 hover:shadow-pop active:translate-y-0 active:shadow-card',
+        className,
+      )}
       {...props}
     />
   )
@@ -15,7 +22,7 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-base font-semibold leading-tight', className)} {...props} />
+  return <h3 className={cn('text-base font-semibold leading-tight tracking-tight', className)} {...props} />
 }
 
 export function CardDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {

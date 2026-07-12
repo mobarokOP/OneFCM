@@ -3,7 +3,7 @@ import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 const base =
-  'flex w-full rounded-xl border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50'
+  'flex w-full rounded-xl border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-[border-color,box-shadow,background-color] duration-150 hover:border-muted-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/40 disabled:hover:border-input'
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
@@ -25,5 +25,5 @@ export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLab
 
 export function FieldError({ children }: { children?: React.ReactNode }) {
   if (!children) return null
-  return <p className="mt-1 text-xs text-red-500">{children}</p>
+  return <p className="mt-1 animate-fade-in text-xs text-red-500">{children}</p>
 }

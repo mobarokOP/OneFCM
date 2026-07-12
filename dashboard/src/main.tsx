@@ -7,12 +7,20 @@ import { ConfirmProvider } from '@/components/ui/ConfirmDialog'
 import App from './App'
 import './index.css'
 
-const queryClient = new QueryClient({
+// Exported so route modules / hooks can prefetch (queryClient.prefetchQuery).
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 30_000,
+      // Data is considered fresh for 60s — avoids refetch storms on navigation.
+      staleTime: 60_000,
+      // Keep unused cache entries for 5 minutes so back-navigation is instant.
+      gcTime: 5 * 60_000,
+      // Keep previous data while a query key changes (pagination, filters) so
+      // list pages don't flash skeletons. For fresh queries prev is undefined,
+      // which behaves exactly like no placeholder — detail pages unaffected.
+      placeholderData: (prev: unknown) => prev,
     },
   },
 })
