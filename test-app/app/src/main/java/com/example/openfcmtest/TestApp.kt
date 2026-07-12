@@ -11,10 +11,10 @@ class TestApp : Application() {
         // ============================================================
         // Your application's App ID from the OpenFCM dashboard
         // (beta.kathgolap.online → Applications → your app → copy App ID).
-        const val OPENFCM_APP_ID = "019f55cd-8dfc-7250-ba3e-fa231bbefaba"
+        const val OPENFCM_APP_ID = "019f5848-a47a-704f-8fe2-fe77574eea0b"
 
         // Your OpenFCM backend base URL (no trailing slash, no /v1).
-        const val OPENFCM_BASE_URL = "https://admin.beta.kathgolap.online"
+        const val OPENFCM_BASE_URL = "https://admin.onefcm.com"
         // ============================================================
     }
 

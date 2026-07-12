@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Plus, Trash2, Users2, Bell, Image as ImageIcon } from 'lucide-react'
+import { Plus, Trash2, Users2 } from 'lucide-react'
 import { notificationsApi } from '@/api/notifications'
 import { segmentsApi } from '@/api/segments'
 import { topicsApi } from '@/api/topics'
@@ -13,6 +13,7 @@ import { Input, Label, Textarea } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Badge } from '@/components/ui/Badge'
 import { cn, formatNumber } from '@/lib/utils'
+import { DevicePreview } from './DevicePreview'
 import type { AudienceType, CreateNotificationPayload } from '@/types'
 
 /** Prefill values, e.g. when duplicating an existing notification. */
@@ -282,23 +283,7 @@ export function Composer({ open, onClose, appId, initial }: ComposerProps) {
         <div className="space-y-5 lg:col-span-2">
           <div>
             <Label>Preview</Label>
-            <div className="rounded-2xl border border-border bg-muted/40 p-3">
-              <div className="rounded-xl border border-border bg-card p-3 shadow-soft">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                    <Bell className="h-3.5 w-3.5" />
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground">Your App · now</span>
-                </div>
-                <p className="mt-2 line-clamp-1 text-sm font-semibold">{title || 'Notification title'}</p>
-                <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{body || 'Notification message preview appears here.'}</p>
-                {imageUrl && (
-                  <div className="mt-2 flex h-20 items-center justify-center overflow-hidden rounded-lg bg-muted text-muted-foreground">
-                    <ImageIcon className="h-5 w-5" />
-                  </div>
-                )}
-              </div>
-            </div>
+            <DevicePreview title={title} body={body} imageUrl={imageUrl || undefined} />
           </div>
 
           <div>
