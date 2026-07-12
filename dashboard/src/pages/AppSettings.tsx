@@ -1,33 +1,81 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { ArrowLeft, Trash2, Copy } from 'lucide-react'
+import { ArrowLeft, Trash2, Copy, Flame } from 'lucide-react'
 import { appsApi } from '@/api/apps'
 import { getErrorMessage } from '@/api/client'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Input, Label, Textarea } from '@/components/ui/Input'
+import { Input, Label } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { StatusBadge } from '@/components/ui/Badge'
-import { copyToClipboard, formatDate } from '@/lib/utils'
+import { Badge, StatusBadge } from '@/components/ui/Badge'
+import { ServiceAccountInput, parseServiceAccount } from '@/components/ServiceAccountInput'
+import { copyToClipboard, formatDate, formatDateTime } from '@/lib/utils'
+import type { Application } from '@/types'
 
 interface SettingsForm {
   name: string
   package_name: string
-  fcm_project_id: string
   status: string
   rate_limit: number
-  fcm_service_account: string
+}
+
+function FcmStatusCard({ app }: { app: Application }) {
+  const fcm = app.fcm
+  const configured = !!(fcm && (fcm.project_id || fcm.error)) || !!app.has_service_account
+
+  let badge = <Badge tone="muted">Not configured</Badge>
+  if (fcm?.error) badge = <Badge tone="danger">Error</Badge>
+  else if (fcm?.synced) badge = <Badge tone="success">Connected</Badge>
+  else if (configured) badge = <Badge tone="warning">Pending sync</Badge>
+
+  return (
+    <div className="rounded-xl border border-border bg-muted/40 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <Flame className="h-4 w-4 text-muted-foreground" />
+          Firebase connection
+        </div>
+        {badge}
+      </div>
+
+      <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        <div className="flex items-baseline justify-between gap-2 sm:block">
+          <dt className="text-xs text-muted-foreground">Connected project</dt>
+          <dd className="font-mono text-xs">{fcm?.project_id ?? '—'}</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-2 sm:block">
+          <dt className="text-xs text-muted-foreground">Sender ID</dt>
+          <dd className="font-mono text-xs">{fcm?.sender_id ?? '—'}</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-2 sm:block">
+          <dt className="text-xs text-muted-foreground">Package name</dt>
+          <dd className="font-mono text-xs">{fcm?.package_name ?? '—'}</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-2 sm:block">
+          <dt className="text-xs text-muted-foreground">Last synced</dt>
+          <dd className="text-xs">{fcm?.synced_at ? formatDateTime(fcm.synced_at) : '—'}</dd>
+        </div>
+      </dl>
+
+      {fcm?.error && (
+        <p className="mt-3 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+          {fcm.error}
+        </p>
+      )}
+    </div>
+  )
 }
 
 export default function AppSettings() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const qc = useQueryClient()
+  const [saRaw, setSaRaw] = useState('')
 
   const { data: app, isLoading } = useQuery({
     queryKey: ['apps', id],
@@ -42,27 +90,35 @@ export default function AppSettings() {
       reset({
         name: app.name,
         package_name: app.package_name,
-        fcm_project_id: app.fcm_project_id ?? '',
         status: app.status,
         rate_limit: app.rate_limit ?? 0,
-        fcm_service_account: '',
       })
     }
   }, [app, reset])
+
+  const saParsed = parseServiceAccount(saRaw)
+  const saBlocking = saRaw.trim().length > 0 && !saParsed.ok
 
   const update = useMutation({
     mutationFn: (v: SettingsForm) =>
       appsApi.update(id, {
         name: v.name,
         package_name: v.package_name,
-        fcm_project_id: v.fcm_project_id,
         status: v.status,
         rate_limit: Number(v.rate_limit) || 0,
-        ...(v.fcm_service_account ? { fcm_service_account: v.fcm_service_account } : {}),
+        ...(saParsed.ok && saParsed.data ? { fcm_service_account: saParsed.data } : {}),
       }),
-    onSuccess: () => {
-      toast.success('Settings saved')
+    onSuccess: (updated) => {
+      qc.setQueryData(['apps', id], updated)
       qc.invalidateQueries({ queryKey: ['apps'] })
+      setSaRaw('')
+      if (updated.fcm?.error) {
+        toast.error(`Settings saved, but Firebase sync failed: ${updated.fcm.error}`)
+      } else if (saParsed.ok && updated.fcm?.synced) {
+        toast.success(`Connected to Firebase project ${updated.fcm.project_id}`)
+      } else {
+        toast.success('Settings saved')
+      }
     },
     onError: (err) => toast.error(getErrorMessage(err, 'Could not save settings')),
   })
@@ -147,22 +203,18 @@ export default function AppSettings() {
           <Card>
             <CardHeader>
               <CardTitle>Firebase Cloud Messaging</CardTitle>
-              <CardDescription>Credentials used to deliver via FCM HTTP v1.</CardDescription>
+              <CardDescription>
+                Upload your Firebase service account key — project ID, sender ID and client config are derived
+                automatically. Your Android app needs zero Firebase setup.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <FcmStatusCard app={app} />
               <div>
-                <Label htmlFor="fcm_project_id">Firebase project ID</Label>
-                <Input id="fcm_project_id" {...register('fcm_project_id')} />
-              </div>
-              <div>
-                <Label htmlFor="fcm_service_account">Replace service account JSON (optional)</Label>
-                <Textarea
-                  id="fcm_service_account"
-                  rows={5}
-                  placeholder="Paste new service-account JSON to rotate credentials"
-                  className="font-mono text-xs"
-                  {...register('fcm_service_account')}
-                />
+                <Label htmlFor="fcm_service_account">
+                  {app.has_service_account ? 'Replace service account key' : 'Service account key'}
+                </Label>
+                <ServiceAccountInput value={saRaw} onChange={setSaRaw} disabled={update.isPending} />
               </div>
             </CardContent>
           </Card>
@@ -181,9 +233,14 @@ export default function AppSettings() {
             </CardContent>
             <CardFooter className="justify-between">
               <p className="text-xs text-muted-foreground">Created {formatDate(app.created_at)}</p>
-              <Button type="submit" loading={update.isPending}>
-                Save changes
-              </Button>
+              <div className="flex items-center gap-3">
+                {saBlocking && (
+                  <p className="text-xs text-red-600 dark:text-red-400">Fix the service-account JSON to save.</p>
+                )}
+                <Button type="submit" loading={update.isPending} disabled={saBlocking}>
+                  Save changes
+                </Button>
+              </div>
             </CardFooter>
           </Card>
 

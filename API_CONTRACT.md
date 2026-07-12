@@ -28,7 +28,9 @@ Single source of truth for backend, dashboard, and Android SDK. All parts build 
 
 ## B. Applications (JWT)
 - `GET    /v1/apps` → list applications for tenant
-- `POST   /v1/apps` `{name,package_name,fcm_project_id,fcm_service_account(json)}` → `{data:app}`
+- `POST   /v1/apps` `{name,package_name,fcm_service_account(json, optional)}` → `{data:app}`
+  - Uploading a Firebase **service account JSON** is all that's needed: the backend derives the client config (project id, sender id, api key, app id) via the Firebase Management API, auto-registering an Android app in the Firebase project (using `package_name`) if none exists. Result is exposed on the app object as `fcm: {project_id, synced, synced_at, sender_id, package_name, error}`.
+- `GET /v1/fcm-config` (SDK auth) → `{data:{project_id,app_id,api_key,sender_id,storage_bucket}}` — per-app Firebase client config (falls back to the server-wide `OPENFCM_FCM_*` default). Used by the Android SDK to init Firebase at runtime (no google-services.json).
 - `GET    /v1/apps/{id}` → `{data:app}` (includes counts: devices, users)
 - `PATCH  /v1/apps/{id}` → update
 - `DELETE /v1/apps/{id}`

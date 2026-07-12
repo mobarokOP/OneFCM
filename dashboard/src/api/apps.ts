@@ -4,8 +4,13 @@ import type { Application } from '@/types'
 export interface CreateAppPayload {
   name: string
   package_name: string
-  fcm_project_id?: string
-  fcm_service_account?: string
+  /** Parsed Firebase service-account JSON. Project id, sender id, etc. are derived server-side. */
+  fcm_service_account?: Record<string, unknown>
+}
+
+export type UpdateAppPayload = Partial<CreateAppPayload> & {
+  status?: string
+  rate_limit?: number
 }
 
 export const appsApi = {
@@ -18,18 +23,10 @@ export const appsApi = {
     return unwrap<Application>(data)
   },
   async create(payload: CreateAppPayload): Promise<Application> {
-    const body: Record<string, unknown> = { ...payload }
-    if (payload.fcm_service_account) {
-      try {
-        body.fcm_service_account = JSON.parse(payload.fcm_service_account)
-      } catch {
-        // send as-is; backend will validate
-      }
-    }
-    const { data } = await api.post('/apps', body)
+    const { data } = await api.post('/apps', payload)
     return unwrap<Application>(data)
   },
-  async update(id: string, payload: Partial<CreateAppPayload> & { status?: string; rate_limit?: number }): Promise<Application> {
+  async update(id: string, payload: UpdateAppPayload): Promise<Application> {
     const { data } = await api.patch(`/apps/${id}`, payload)
     return unwrap<Application>(data)
   },

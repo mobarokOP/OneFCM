@@ -40,9 +40,10 @@ Get push notifications working in your Android app in **3 steps** — no `google
 
 ### Prerequisites
 - Android Studio, app with **minSdk 24+**
-- An **App ID** — create an app in the [OpenFCM dashboard](https://beta.kathgolap.online) → **Applications** → **New application**, then copy its App ID.
+- **Create the app in the dashboard** — [OpenFCM dashboard](https://beta.kathgolap.online) → **Applications** → **New application**. Set the app's **package name** and copy its **App ID**.
+- **Upload the Firebase service account JSON** — in the Firebase Console: **Project settings → Service accounts → Generate new private key**, then upload that JSON in the app's settings in the dashboard. The backend derives the Firebase client config automatically (and auto-registers an Android app in your Firebase project using the package name if none exists).
 
-> ✨ The SDK fetches Firebase config from the server, initializes Firebase, registers the device, and **auto-prompts for notification permission**. The central Firebase project is configured once on the server — see [infra/](infra).
+> ✨ The SDK fetches your app's Firebase config from the server (`GET /v1/fcm-config`), initializes Firebase, registers the device, and **auto-prompts for notification permission**. Each app sends through its **own** Firebase project — notifications never leak between apps.
 
 ---
 

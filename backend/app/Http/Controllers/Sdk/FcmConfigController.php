@@ -15,8 +15,20 @@ class FcmConfigController extends Controller
 {
     public function show(Request $request): JsonResponse
     {
-        // Ensure the app id is valid (resolve.app middleware attached it).
-        $this->currentApp($request);
+        $app = $this->currentApp($request);
+
+        // Per-app config first (derived from the app's own service account),
+        // then the optional server-wide default project.
+        $own = $app->fcm_client_config;
+        if ($own && ! empty($own['api_key']) && ! empty($own['app_id'])) {
+            return $this->item([
+                'project_id' => $own['project_id'],
+                'app_id' => $own['app_id'],
+                'api_key' => $own['api_key'],
+                'sender_id' => (string) $own['project_number'],
+                'storage_bucket' => $own['storage_bucket'] ?? null,
+            ]);
+        }
 
         $client = config('openfcm.default_client');
 
@@ -26,7 +38,7 @@ class FcmConfigController extends Controller
                 return response()->json([
                     'error' => [
                         'code' => 'fcm_not_configured',
-                        'message' => 'Push is not configured on this server yet.',
+                        'message' => 'Push is not configured for this application yet. Upload the Firebase service account in the dashboard.',
                     ],
                 ], 404);
             }

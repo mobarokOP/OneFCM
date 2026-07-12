@@ -23,7 +23,6 @@ import { formatNumber } from '@/lib/utils'
 const schema = z.object({
   name: z.string().min(2, 'App name is required'),
   package_name: z.string().min(3, 'Package name is required'),
-  fcm_project_id: z.string().optional(),
   fcm_service_account: z.string().optional(),
 })
 type FormValues = z.infer<typeof schema>
@@ -53,7 +52,20 @@ export default function Apps() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) })
 
   const mutation = useMutation({
-    mutationFn: (v: FormValues) => appsApi.create(v as CreateAppPayload),
+    mutationFn: (v: FormValues) => {
+      // Send the service account as a parsed object; the backend derives the
+      // Firebase client config from it automatically.
+      const payload: CreateAppPayload = { name: v.name, package_name: v.package_name }
+      if (v.fcm_service_account?.trim()) {
+        try {
+          payload.fcm_service_account = JSON.parse(v.fcm_service_account)
+        } catch {
+          // Invalid JSON — let the backend's validation surface the error.
+          payload.fcm_service_account = { _raw: v.fcm_service_account }
+        }
+      }
+      return appsApi.create(payload)
+    },
     onSuccess: (app) => {
       toast.success('Application created')
       qc.invalidateQueries({ queryKey: ['apps'] })
@@ -192,21 +204,18 @@ export default function Apps() {
             </div>
           </div>
           <div>
-            <Label htmlFor="fcm_project_id">Firebase project ID</Label>
-            <Input id="fcm_project_id" placeholder="acme-news-12345" {...register('fcm_project_id')} />
-            <FieldError>{errors.fcm_project_id?.message}</FieldError>
-          </div>
-          <div>
-            <Label htmlFor="fcm_service_account">Firebase service account JSON</Label>
+            <Label htmlFor="fcm_service_account">Firebase service account JSON (optional)</Label>
             <Textarea
               id="fcm_service_account"
               rows={6}
-              placeholder='{ "type": "service_account", "project_id": "...", "private_key": "..." }'
+              placeholder='{ "type": "service_account", "project_id": "...", "client_email": "...", "private_key": "..." }'
               className="font-mono text-xs"
               {...register('fcm_service_account')}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Paste the service-account key used for FCM HTTP v1. Stored encrypted server-side.
+              Firebase Console → Project settings → Service accounts → Generate new private key.
+              Everything else (project id, sender id, client keys) is derived automatically.
+              You can also add this later in the app&apos;s settings.
             </p>
           </div>
         </form>

@@ -27,11 +27,21 @@ export interface AppStats {
   sent_30d: number
 }
 
+export interface AppFcm {
+  project_id: string | null
+  synced: boolean
+  synced_at: string | null
+  sender_id: string | null
+  package_name: string | null
+  error: string | null
+}
+
 export interface Application {
   id: string
   name: string
   package_name: string
-  fcm_project_id: string | null
+  fcm?: AppFcm | null
+  has_service_account?: boolean
   status: 'active' | 'paused' | 'disabled' | string
   rate_limit: number | null
   created_at: string

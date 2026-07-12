@@ -79,15 +79,23 @@ Or build the AAR locally:
 
 ### 2. No Firebase setup in your app 🎉
 
-Unlike a raw FCM integration, the host app needs **no `google-services.json`
-and no Google Services plugin**. On `init()` the SDK fetches the central
-Firebase project's client config from `GET /v1/fcm-config`, initializes Firebase
-at runtime, and obtains the FCM token itself.
+Unlike a raw FCM integration, the host app needs **no `google-services.json`,
+no Google Services plugin, and no Firebase libraries of its own**. On `init()`
+the SDK fetches the app's Firebase client config from `GET /v1/fcm-config`,
+initializes Firebase at runtime, and obtains the FCM token itself.
 
-The central Firebase project is configured **once on the server** (see the
-`OPENFCM_FCM_*` env vars in `config/openfcm.php` and `.env.example`). If your
-host app already uses its own Firebase (a default `FirebaseApp` exists), the SDK
-uses that instead and doesn't touch it.
+The Firebase side is configured **per app in the dashboard**: the admin uploads
+the app's Firebase **service account JSON** (Firebase Console → Project
+settings → Service accounts → Generate new private key) in the app's settings,
+and the backend derives the client config (project id, sender id, API key,
+app id) automatically via the Firebase Management API — auto-registering an
+Android app with the dashboard app's package name if the Firebase project has
+none. `GET /v1/fcm-config` serves this per-app config, falling back to a
+server-wide default (`OPENFCM_FCM_*` env vars) only for apps without their own
+service account. Each app sends through its own Firebase project, so
+notifications are fully isolated between apps. If your host app already uses
+its own Firebase (a default `FirebaseApp` exists), the SDK uses that instead
+and doesn't touch it.
 
 The SDK already declares the `FirebaseMessagingService`, `INTERNET`,
 `ACCESS_NETWORK_STATE`, and `POST_NOTIFICATIONS` entries via manifest merging —

@@ -15,49 +15,30 @@ Test App (শুধু SDK + App ID)
 OpenFCM server ──► Firebase config দেয় ──► SDK Firebase init করে টোকেন নেয়
    ▲                                              │ device register
    │  তুমি dashboard/API থেকে notification পাঠাও   ▼
-   └────────────► central Firebase (FCM) ────► তোমার ফোনে notification 🎉
+   └────────► অ্যাপের নিজের Firebase (FCM) ────► তোমার ফোনে notification 🎉
 ```
 
-একটা **central Firebase project** সব অ্যাপ শেয়ার করে (তাই প্রতি অ্যাপে Firebase বসাতে হয় না)। সেটআপ শুধু **server-এ একবার**।
+**প্রতিটা অ্যাপের নিজস্ব Firebase project** — dashboard-এ শুধু সেই অ্যাপের **service account JSON** আপলোড করলেই হয়। বাকি সব (client config, Android app registration) backend নিজেই করে নেয়। তাই notification কখনো এক অ্যাপ থেকে আরেক অ্যাপে যাওয়ার সুযোগ নেই।
 
 ---
 
-## 🖥️ Part A — Server setup (একবার, mobarok করবে)
+## 🖥️ Part A — Dashboard-এ Firebase connect (প্রতি অ্যাপে একবার)
 
-Notification সত্যিকারে যেতে হলে backend-এ একটা central Firebase project কনফিগার করতে হবে।
+কোনো server `.env` ঘাঁটাঘাঁটি লাগবে না — সবকিছু [dashboard](https://beta.kathgolap.online) থেকেই হয়।
 
-### A1. একটা Firebase project বানাও
-1. [Firebase Console](https://console.firebase.google.com) → **Add project** (একটাই, সব OpenFCM অ্যাপের জন্য)।
-2. ভিতরে **Add app → Android** → যেকোনো package দাও (যেমন `com.openfcm.central`) → `google-services.json` download করো।
+### A1. Service account key নাও (Firebase Console)
+1. [Firebase Console](https://console.firebase.google.com) → তোমার অ্যাপের project খোলো (না থাকলে **Add project**)।
+2. ⚙️ **Project settings → Service accounts → Generate new private key** → JSON ফাইল download করো।
 
-### A2. Client value গুলো বের করো (google-services.json থেকে)
-| .env variable | google-services.json-এর ফিল্ড |
-|---|---|
-| `OPENFCM_FCM_PROJECT_ID` | `project_info.project_id` |
-| `OPENFCM_FCM_SENDER_ID` | `project_info.project_number` |
-| `OPENFCM_FCM_CLIENT_APP_ID` | `client[0].client_info.mobilesdk_app_id` |
-| `OPENFCM_FCM_CLIENT_API_KEY` | `client[0].api_key[0].current_key` |
-| `OPENFCM_FCM_STORAGE_BUCKET` | `project_info.storage_bucket` (optional) |
+> `google-services.json` লাগবে **না** — শুধু এই service account JSON।
 
-### A3. Service account (পাঠানোর জন্য, secret)
-Firebase → ⚙️ **Project settings → Service accounts → Generate new private key** → JSON download।
+### A2. Dashboard-এ আপলোড করো
+1. [Dashboard](https://beta.kathgolap.online) → **Applications** → তোমার অ্যাপ (না থাকলে **New application** — অবশ্যই **package name** দিয়ে বানাও)।
+2. অ্যাপের **Settings → FCM** → service account **JSON আপলোড** করো।
+3. Backend নিজে থেকেই Firebase client config (project id, sender id, API key, app id) বের করে নেবে। Firebase project-এ কোনো Android app register না থাকলে অ্যাপের package name দিয়ে **auto-register** করে দেবে।
 
-### A4. VPS-এ backend `.env`-এ বসাও
-```env
-OPENFCM_DRIVER=fcm
-OPENFCM_FCM_PROJECT_ID=your-project-id
-OPENFCM_FCM_SENDER_ID=1234567890
-OPENFCM_FCM_CLIENT_APP_ID=1:1234567890:android:abcdef123456
-OPENFCM_FCM_CLIENT_API_KEY=AIzaSy...
-OPENFCM_FCM_STORAGE_BUCKET=your-project-id.appspot.com
-# service account JSON — এক লাইনে (অথবা _PATH দিয়ে ফাইল path)
-OPENFCM_FCM_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"...", ... }
-```
-তারপর:
-```bash
-php artisan config:clear
-```
-✅ যাচাই: `https://admin.beta.kathgolap.online/v1/fcm-config` (header `X-OpenFCM-App: <App ID>`) দিলে project config ফেরত দিলে ঠিক আছে।
+### A3. যাচাই
+Status **"Connected"** দেখালেই ready ✅ — এখন Part B-তে যাও।
 
 ---
 
@@ -98,13 +79,12 @@ curl -X POST https://admin.beta.kathgolap.online/v1/notifications \
 
 ## 🩺 আসছে না? — Checklist
 
-1. **Server A1–A4 ঠিকভাবে হয়েছে?** `/v1/fcm-config` কাজ করছে? (সবচেয়ে জরুরি)
-2. `.env` বদলানোর পর **`php artisan config:clear`** দিয়েছ?
-3. `OPENFCM_DRIVER=fcm` (বা `auto`) আছে? service account JSON valid?
-4. ফোনে permission **Allow** করেছ? (Settings → Apps → OpenFCM Test → Notifications)
-5. **Device ID** দেখাচ্ছে? না হলে internet / App ID / baseUrl চেক করো।
-6. Emulator হলে **Google Play আছে এমন image**।
-7. **Logcat** → filter `OpenFCM` (init/config/token/register/receive লগ)।
+1. **Dashboard-এ অ্যাপের FCM status "Connected" দেখাচ্ছে?** (সবচেয়ে জরুরি) — error দেখালে message-টা পড়ো (যেমন: Firebase project-এ Android app নেই → অ্যাপের package name সেট করে আবার save)।
+2. Service account JSON **সঠিক project-এর** তো? (Firebase Console → Service accounts থেকে নতুন key নাও)
+3. ফোনে permission **Allow** করেছ? (Settings → Apps → OpenFCM Test → Notifications)
+4. **Device ID** দেখাচ্ছে? না হলে internet / App ID / baseUrl চেক করো।
+5. Emulator হলে **Google Play আছে এমন image**।
+6. **Logcat** → filter `OpenFCM` (init/config/token/register/receive লগ)।
 
 ---
 

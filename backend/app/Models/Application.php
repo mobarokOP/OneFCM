@@ -13,7 +13,8 @@ class Application extends Model
 
     protected $fillable = [
         'account_id', 'name', 'package_name', 'fcm_project_id',
-        'fcm_service_account', 'status', 'rate_limit',
+        'fcm_service_account', 'fcm_client_config', 'fcm_sync_error',
+        'fcm_synced_at', 'status', 'rate_limit',
     ];
 
     protected $hidden = ['fcm_service_account'];
@@ -23,6 +24,8 @@ class Application extends Model
         return [
             // Service account JSON is encrypted at rest.
             'fcm_service_account' => 'encrypted',
+            'fcm_client_config' => 'array',
+            'fcm_synced_at' => 'datetime',
             'rate_limit' => 'integer',
         ];
     }

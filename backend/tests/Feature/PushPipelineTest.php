@@ -98,6 +98,52 @@ class PushPipelineTest extends TestCase
             ->assertJsonPath('data.sender_id', '123456');
     }
 
+    public function test_service_account_upload_derives_per_app_fcm_config(): void
+    {
+        [$token] = $this->actingAdmin();
+
+        // Mock the Firebase Management API integration.
+        $mock = $this->createMock(\App\Services\Fcm\FirebaseManagement::class);
+        $mock->method('deriveClientConfig')->willReturn([
+            'project_id' => 'acme-proj',
+            'project_number' => '987654321',
+            'app_id' => '1:987654321:android:deadbeef',
+            'api_key' => 'AIzaACME',
+            'storage_bucket' => 'acme-proj.appspot.com',
+            'package_name' => 'com.acme.app',
+        ]);
+        $this->app->instance(\App\Services\Fcm\FirebaseManagement::class, $mock);
+
+        $sa = [
+            'type' => 'service_account',
+            'project_id' => 'acme-proj',
+            'client_email' => 'x@acme-proj.iam.gserviceaccount.com',
+            'private_key' => '---KEY---',
+        ];
+
+        $created = $this->withToken($token)->postJson('/v1/apps', [
+            'name' => 'Acme', 'package_name' => 'com.acme.app',
+            'fcm_service_account' => $sa,
+        ])->assertCreated();
+
+        $created->assertJsonPath('data.fcm.synced', true)
+            ->assertJsonPath('data.fcm.project_id', 'acme-proj')
+            ->assertJsonPath('data.fcm.sender_id', '987654321')
+            ->assertJsonPath('data.fcm.error', null);
+
+        // SDK now gets the per-app client config.
+        $this->getJson('/v1/fcm-config', ['X-OpenFCM-App' => $created->json('data.id')])
+            ->assertOk()
+            ->assertJsonPath('data.project_id', 'acme-proj')
+            ->assertJsonPath('data.api_key', 'AIzaACME')
+            ->assertJsonPath('data.sender_id', '987654321');
+
+        // Garbage service account is rejected up front.
+        $this->withToken($token)->postJson('/v1/apps', [
+            'name' => 'Bad', 'fcm_service_account' => ['foo' => 'bar'],
+        ])->assertStatus(422);
+    }
+
     public function test_send_requires_auth(): void
     {
         [, $app] = $this->actingAdmin();
