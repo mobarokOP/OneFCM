@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Send, Plus, Trash2 } from 'lucide-react'
+import { Send, Plus, Trash2, Copy, Image as ImageIcon } from 'lucide-react'
 import { notificationsApi } from '@/api/notifications'
 import { getErrorMessage } from '@/api/client'
 import { useCurrentApp } from '@/hooks/useApps'
@@ -67,9 +67,12 @@ export default function Notifications() {
       key: 'title',
       header: 'Notification',
       render: (n) => (
-        <div className="max-w-xs">
-          <p className="truncate font-medium">{n.title || 'Untitled'}</p>
-          <p className="truncate text-xs text-muted-foreground">{n.body}</p>
+        <div className="flex max-w-sm items-center gap-3">
+          <Thumb url={n.image_url} />
+          <div className="min-w-0">
+            <p className="truncate font-medium">{n.title || 'Untitled'}</p>
+            <p className="truncate text-xs text-muted-foreground">{n.body}</p>
+          </div>
         </div>
       ),
     },
@@ -94,20 +97,41 @@ export default function Notifications() {
       key: 'actions',
       header: '',
       render: (n) => (
-        <button
-          type="button"
-          title="Delete notification"
-          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500 disabled:opacity-50"
-          disabled={remove.isPending}
-          onClick={(e) => {
-            e.stopPropagation()
-            if (window.confirm(`Delete "${n.title || 'Untitled'}"? Its delivery logs will be removed too.`)) {
-              remove.mutate(n.id)
-            }
-          }}
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            title="Duplicate — edit and send again"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            onClick={(e) => {
+              e.stopPropagation()
+              setInitial({
+                title: n.title,
+                body: n.body,
+                image_url: n.image_url,
+                deep_link: n.deep_link,
+                priority: n.priority,
+                data: n.data,
+              })
+              setCompose(true)
+            }}
+          >
+            <Copy className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            title="Delete notification"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500 disabled:opacity-50"
+            disabled={remove.isPending}
+            onClick={(e) => {
+              e.stopPropagation()
+              if (window.confirm(`Delete "${n.title || 'Untitled'}"? Its delivery logs will be removed too.`)) {
+                remove.mutate(n.id)
+              }
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
       ),
     },
   ]
@@ -168,5 +192,28 @@ export default function Notifications() {
         />
       )}
     </>
+  )
+}
+
+/** 40px image thumbnail with graceful fallback (hidden icon box on error/none). */
+function Thumb({ url }: { url?: string | null }) {
+  const [failed, setFailed] = useState(false)
+
+  if (!url || failed) {
+    return (
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        <ImageIcon className="h-4 w-4" />
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={url}
+      alt=""
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className="h-10 w-10 shrink-0 rounded-lg border border-border object-cover"
+    />
   )
 }

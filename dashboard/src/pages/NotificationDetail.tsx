@@ -137,11 +137,7 @@ export default function NotificationDetail() {
             <CardTitle>Content</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            {n?.image_url && (
-              <div className="flex h-28 items-center justify-center overflow-hidden rounded-xl bg-muted text-muted-foreground">
-                <ImageIcon className="h-6 w-6" />
-              </div>
-            )}
+            {n?.image_url && <NotificationImage url={n.image_url} />}
             <Detail label="Title" value={n?.title} />
             <Detail label="Body" value={n?.body} />
             <Detail label="Deep link" value={n?.deep_link || '—'} mono />
@@ -213,5 +209,33 @@ function Detail({ label, value, mono }: { label: string; value?: string | null; 
       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className={mono ? 'break-all font-mono text-xs' : 'text-sm'}>{value || '—'}</p>
     </div>
+  )
+}
+
+/** Renders the pushed image from any URL, falling back gracefully if it can't load. */
+function NotificationImage({ url }: { url: string }) {
+  const [failed, setFailed] = useState(false)
+
+  if (failed) {
+    return (
+      <div className="flex h-28 flex-col items-center justify-center gap-1 overflow-hidden rounded-xl bg-muted text-muted-foreground">
+        <ImageIcon className="h-6 w-6" />
+        <a href={url} target="_blank" rel="noreferrer" className="max-w-full truncate px-3 text-xs underline">
+          {url}
+        </a>
+      </div>
+    )
+  }
+
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className="block">
+      <img
+        src={url}
+        alt="Notification image"
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="max-h-48 w-full rounded-xl border border-border object-cover"
+      />
+    </a>
   )
 }
