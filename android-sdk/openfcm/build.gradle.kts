@@ -11,7 +11,7 @@ group = "com.github.mobarokOP.OpenFCM"
 version = (findProperty("version") as? String)
     ?.takeUnless { it == "unspecified" }
     ?: System.getenv("VERSION")
-    ?: "2.0.0"
+    ?: "3.0.0"
 
 android {
     namespace = "com.openfcm.sdk"
@@ -23,7 +23,7 @@ android {
         // The default backend base URL. Consumers can override at runtime via
         // OpenFCM.init(...) or by supplying a manifest meta-data entry.
         buildConfigField("String", "OPENFCM_DEFAULT_BASE_URL", "\"http://localhost:8000\"")
-        buildConfigField("String", "OPENFCM_SDK_VERSION", "\"2.0.1\"")
+        buildConfigField("String", "OPENFCM_SDK_VERSION", "\"3.0.0\"")
 
         consumerProguardFiles("consumer-rules.pro")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -55,6 +55,11 @@ object OpenFCM {
         val signal = CompletableDeferred<Unit>()
         ready = signal
 
+        // OneSignal-style: auto-prompt for notification permission on first Activity.
+        if (config.promptForPermissionOnInit) {
+            com.openfcm.sdk.internal.PermissionAutoPrompter.enable(ctx)
+        }
+
         OpenFCMCore.scope.launch {
             OpenFCMCore.initialize(ctx, appId, config)
             signal.complete(Unit)

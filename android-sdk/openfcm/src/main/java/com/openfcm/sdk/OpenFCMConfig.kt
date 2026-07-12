@@ -21,6 +21,7 @@ class OpenFCMConfig private constructor(
     val accentColor: Int?,
     val autoRegister: Boolean,
     val trackSessions: Boolean,
+    val promptForPermissionOnInit: Boolean,
 ) {
 
     class Builder {
@@ -46,6 +47,12 @@ class OpenFCMConfig private constructor(
         /** Track foreground session time and report it on background. Default true. */
         var trackSessions: Boolean = true
 
+        /**
+         * Automatically show the Android 13+ notification permission prompt on the
+         * first Activity after init — so the host app doesn't have to. Default true.
+         */
+        var promptForPermissionOnInit: Boolean = true
+
         fun build(): OpenFCMConfig = OpenFCMConfig(
             baseUrl = baseUrl,
             enableDebugLogging = enableDebugLogging,
@@ -55,6 +62,7 @@ class OpenFCMConfig private constructor(
             accentColor = accentColor,
             autoRegister = autoRegister,
             trackSessions = trackSessions,
+            promptForPermissionOnInit = promptForPermissionOnInit,
         )
     }
 

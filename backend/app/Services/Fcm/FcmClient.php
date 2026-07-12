@@ -32,7 +32,7 @@ class FcmClient
             return ['ok' => false, 'message_id' => null, 'error_code' => 'AUTH_ERROR', 'error' => $e->getMessage(), 'unregister' => false];
         }
 
-        $url = sprintf(config('openfcm.fcm.endpoint'), $app->fcm_project_id);
+        $url = sprintf(config('openfcm.fcm.endpoint'), $this->projectId($app));
 
         $response = Http::withToken($accessToken)
             ->acceptJson()
@@ -72,19 +72,38 @@ class FcmClient
             return 'log';
         }
 
-        // auto: use real FCM only when a service account + project are present.
-        return ($app->fcm_service_account && $app->fcm_project_id) ? 'fcm' : 'log';
+        // auto: use real FCM when an effective service account + project exist
+        // (the app's own, or the central default project).
+        return ($this->serviceAccount($app) && $this->projectId($app)) ? 'fcm' : 'log';
+    }
+
+    /** The app's own service account, or the central default. */
+    private function serviceAccount(Application $app): ?array
+    {
+        if ($app->fcm_service_account) {
+            return $app->fcmServiceAccountArray();
+        }
+
+        $default = config('openfcm.default_service_account');
+
+        return $default ? json_decode($default, true) : null;
+    }
+
+    /** The app's own FCM project id, or the central default. */
+    private function projectId(Application $app): ?string
+    {
+        return $app->fcm_project_id ?: config('openfcm.default_client.project_id');
     }
 
     private function accessToken(Application $app): string
     {
         return Cache::remember(
-            "fcm:token:{$app->id}",
+            'fcm:token:'.$this->projectId($app),
             config('openfcm.fcm.token_cache_ttl'),
             function () use ($app) {
                 $creds = new ServiceAccountCredentials(
                     config('openfcm.fcm.scope'),
-                    $app->fcmServiceAccountArray()
+                    $this->serviceAccount($app)
                 );
 
                 $token = $creds->fetchAuthToken();

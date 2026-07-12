@@ -38,6 +38,9 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 |--------------------------------------------------------------------------
 */
 Route::middleware('resolve.app')->group(function () {
+    // Firebase client config for runtime init (no google-services.json needed).
+    Route::get('/fcm-config', [\App\Http\Controllers\Sdk\FcmConfigController::class, 'show']);
+
     Route::post('/devices/register', [SdkDeviceController::class, 'register']);
     Route::patch('/devices/token', [SdkDeviceController::class, 'updateToken']);
     Route::delete('/devices/{deviceId}', [SdkDeviceController::class, 'destroy']);

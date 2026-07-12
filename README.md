@@ -36,12 +36,13 @@ OpenFCM is a complete, multi-tenant push-notification platform for **Android** a
 
 ## 🚀 Android SDK Integration
 
-Get push notifications working in your Android app in **5 steps**.
+Get push notifications working in your Android app in **3 steps** — no `google-services.json`, no Firebase setup in your app.
 
 ### Prerequisites
 - Android Studio, app with **minSdk 24+**
-- A **Firebase project** (free) for your app
 - An **App ID** — create an app in the [OpenFCM dashboard](https://beta.kathgolap.online) → **Applications** → **New application**, then copy its App ID.
+
+> ✨ The SDK fetches Firebase config from the server, initializes Firebase, registers the device, and **auto-prompts for notification permission**. The central Firebase project is configured once on the server — see [infra/](infra).
 
 ---
 
@@ -63,7 +64,7 @@ dependencyResolutionManagement {
 ```kotlin
 // app/build.gradle.kts
 dependencies {
-    implementation("com.github.mobarokOP:OpenFCM:2.0.1")
+    implementation("com.github.mobarokOP:OpenFCM:3.0.0")
     // Firebase Messaging is pulled in transitively — no extra FCM dependency needed.
 }
 ```
@@ -72,29 +73,7 @@ dependencies {
 
 ---
 
-### Step 2 · Connect Firebase
-
-OpenFCM delivers through **your** Firebase project, so the app and the OpenFCM server must point at the same project.
-
-1. In the [Firebase Console](https://console.firebase.google.com), add your Android app and download **`google-services.json`** into your `app/` folder.
-2. Add the Google Services plugin:
-
-```kotlin
-// build.gradle.kts (project)
-plugins {
-    id("com.google.gms.google-services") version "4.4.2" apply false
-}
-// app/build.gradle.kts
-plugins {
-    id("com.google.gms.google-services")
-}
-```
-
-3. In Firebase → **Project settings → Service accounts → Generate new private key**. Upload that JSON in the OpenFCM dashboard under your app's **Settings → FCM**. *(This lets the server send on your behalf.)*
-
----
-
-### Step 3 · Initialize the SDK
+### Step 2 · Initialize the SDK
 
 Initialize once in your `Application` class. Point `baseUrl` at the OpenFCM backend.
 
@@ -126,18 +105,9 @@ That's it — the device is registered automatically and starts receiving pushes
 
 ---
 
-### Step 4 · Ask for notification permission (Android 13+)
+### Step 3 · Identify users, tag, and subscribe
 
-```kotlin
-// In your first Activity
-if (!OpenFCM.areNotificationsEnabled()) {
-    OpenFCM.requestNotificationPermission(this)
-}
-```
-
----
-
-### Step 5 · Identify users, tag, and subscribe
+> Notification permission (Android 13+) is requested **automatically** on your first screen. To do it yourself instead, set `promptForPermissionOnInit = false` in `init { }` and call `OpenFCM.requestNotificationPermission(activity)`.
 
 ```kotlin
 // Link this device to your app's user (after they log in)

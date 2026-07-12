@@ -24,6 +24,17 @@ internal data class ApiError(
 @Serializable
 internal data class ErrorEnvelope(val error: ApiError)
 
+// ---- FCM client config (runtime Firebase init) -------------------------------
+
+@Serializable
+internal data class FcmConfigResponse(
+    @SerialName("project_id") val projectId: String,
+    @SerialName("app_id") val appId: String,
+    @SerialName("api_key") val apiKey: String,
+    @SerialName("sender_id") val senderId: String,
+    @SerialName("storage_bucket") val storageBucket: String? = null,
+)
+
 // ---- D. Devices --------------------------------------------------------------
 
 @Serializable

@@ -56,7 +56,7 @@ dependencyResolutionManagement {
 
 // app/build.gradle.kts
 dependencies {
-    implementation("com.github.mobarokOP:OpenFCM:2.0.1")
+    implementation("com.github.mobarokOP:OpenFCM:3.0.0")
     // Firebase Messaging is exposed transitively (api) by the SDK.
 }
 ```
@@ -77,29 +77,23 @@ Or build the AAR locally:
 > The wrapper JAR is not committed. Run `gradle wrapper --gradle-version 8.7`
 > once to generate `gradlew` / `gradle-wrapper.jar`.
 
-### 2. Firebase setup
+### 2. No Firebase setup in your app 🎉
 
-The SDK uses FCM as the delivery transport, so the host app needs a Firebase
-project:
+Unlike a raw FCM integration, the host app needs **no `google-services.json`
+and no Google Services plugin**. On `init()` the SDK fetches the central
+Firebase project's client config from `GET /v1/fcm-config`, initializes Firebase
+at runtime, and obtains the FCM token itself.
 
-1. Create a Firebase project and register your Android package name.
-2. Download `google-services.json` into your **app module** (a template lives at
-   `sample/google-services.json.template`).
-3. Apply the Google Services plugin in your app module:
-
-   ```kotlin
-   plugins {
-       id("com.google.gms.google-services")
-   }
-   ```
-
-4. Upload the Firebase **service-account JSON** to the OpenFCM dashboard when
-   creating the application (`POST /v1/apps`) so the backend can send via FCM
-   HTTP v1.
+The central Firebase project is configured **once on the server** (see the
+`OPENFCM_FCM_*` env vars in `config/openfcm.php` and `.env.example`). If your
+host app already uses its own Firebase (a default `FirebaseApp` exists), the SDK
+uses that instead and doesn't touch it.
 
 The SDK already declares the `FirebaseMessagingService`, `INTERNET`,
 `ACCESS_NETWORK_STATE`, and `POST_NOTIFICATIONS` entries via manifest merging —
-you do **not** need to add them yourself.
+you do **not** need to add them yourself. Notification permission is requested
+automatically on the first Activity (disable with
+`promptForPermissionOnInit = false`).
 
 ---
 

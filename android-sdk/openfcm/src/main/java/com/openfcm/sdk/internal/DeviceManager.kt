@@ -95,7 +95,15 @@ internal class DeviceManager(
         ).onSuccess { Logger.i("FCM token synced.") }
     }
 
-    private suspend fun fetchFcmToken(): String? = runCatching {
-        FirebaseMessaging.getInstance().token.await()
-    }.onFailure { Logger.w("Failed to fetch FCM token: ${it.message}") }.getOrNull()
+    private suspend fun fetchFcmToken(): String? {
+        // Make sure Firebase is initialized (from server config) before asking
+        // for a token — this is what removes the google-services.json requirement.
+        if (!FirebaseBootstrap.ensure(OpenFCMCore.context())) {
+            Logger.w("Firebase unavailable; cannot obtain FCM token yet.")
+            return null
+        }
+        return runCatching {
+            FirebaseMessaging.getInstance().token.await()
+        }.onFailure { Logger.w("Failed to fetch FCM token: ${it.message}") }.getOrNull()
+    }
 }

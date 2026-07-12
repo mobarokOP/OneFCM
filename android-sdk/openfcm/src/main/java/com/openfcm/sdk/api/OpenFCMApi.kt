@@ -45,6 +45,13 @@ internal class OpenFCMApi(
     private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
     private val endpoint = baseUrl.trimEnd('/').toHttpUrl()
 
+    // ---- FCM client config ---------------------------------------------------
+
+    suspend fun fetchFcmConfig(): ApiResult<FcmConfigResponse> =
+        request("v1/fcm-config", method = "GET", body = null) {
+            decode(FcmConfigResponse.serializer(), it)
+        }
+
     // ---- D. Devices ----------------------------------------------------------
 
     suspend fun registerDevice(body: RegisterDeviceRequest): ApiResult<RegisterDeviceResponse> =

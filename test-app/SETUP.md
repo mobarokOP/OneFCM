@@ -1,123 +1,122 @@
 # OpenFCM Test App — Setup Guide (বাংলা)
 
-এই ছোট Android অ্যাপটা দিয়ে তুমি যাচাই করতে পারবে — OpenFCM থেকে পাঠানো notification আসলেই তোমার Android ডিভাইসে পৌঁছাচ্ছে কিনা।
+এই ছোট Android অ্যাপ দিয়ে যাচাই করবে — OpenFCM থেকে পাঠানো notification আসলেই তোমার Android ডিভাইসে পৌঁছাচ্ছে কিনা।
 
-> **কীভাবে কাজ করে:** অ্যাপ চালু হলে OpenFCM SDK নিজে নিজে ডিভাইসটা তোমার backend-এ register করে। তারপর তুমি dashboard/API থেকে notification পাঠালে সেটা **Firebase (FCM)** হয়ে ডিভাইসে আসে।
-
----
-
-## ⚙️ যা যা লাগবে
-
-- **Android Studio** (latest)
-- একটা **Android ডিভাইস** (অথবা Google Play আছে এমন emulator) — Android **8.0+**
-- একটা **Firebase project** (ফ্রি)
-- OpenFCM dashboard-এ একটা **Application** ([beta.kathgolap.online](https://beta.kathgolap.online))
+> **OneSignal-এর মতো:** অ্যাপে **কোনো Firebase setup লাগে না** — না `google-services.json`, না কোনো plugin। শুধু SDK + App ID। SDK নিজেই server থেকে Firebase config নিয়ে init করে, ডিভাইস register করে, আর notification permission চায়।
 
 ---
 
-## 🔑 সবচেয়ে জরুরি কথা (একবার পড়ো)
+## 🧭 কীভাবে কাজ করে
 
-Notification ডিভাইসে যেতে **দুইটা** Firebase জিনিস লাগে — আর দুইটাই **একই Firebase project-এর** হতে হবে:
+```
+Test App (শুধু SDK + App ID)
+   │  init()
+   ▼
+OpenFCM server ──► Firebase config দেয় ──► SDK Firebase init করে টোকেন নেয়
+   ▲                                              │ device register
+   │  তুমি dashboard/API থেকে notification পাঠাও   ▼
+   └────────────► central Firebase (FCM) ────► তোমার ফোনে notification 🎉
+```
 
-| কী | কোথায় বসবে | কাজ |
-|----|-----------|-----|
-| `google-services.json` | এই অ্যাপের `app/` ফোল্ডারে | অ্যাপকে FCM-এ যুক্ত করে (client) |
-| Service account JSON | OpenFCM dashboard → App Settings → FCM | server-কে তোমার হয়ে পাঠানোর অনুমতি দেয় |
-
-> ⚠️ Dashboard-এ service account না দিলে notification **"sent" দেখাবে কিন্তু ডিভাইসে আসবে না** (simulated mode)। এটাই সবচেয়ে common ভুল।
+একটা **central Firebase project** সব অ্যাপ শেয়ার করে (তাই প্রতি অ্যাপে Firebase বসাতে হয় না)। সেটআপ শুধু **server-এ একবার**।
 
 ---
 
-## 🚀 ধাপে ধাপে
+## 🖥️ Part A — Server setup (একবার, mobarok করবে)
 
-### ধাপ ১ — Firebase project + google-services.json
+Notification সত্যিকারে যেতে হলে backend-এ একটা central Firebase project কনফিগার করতে হবে।
 
-1. [Firebase Console](https://console.firebase.google.com) → **Add project** (বা আগের project নাও)।
-2. **Add app → Android** চাপো।
-3. **Package name** দাও ঠিক এইটা: `com.example.openfcmtest`
-4. **Download `google-services.json`**।
-5. ফাইলটা এই অ্যাপের **`test-app/app/`** ফোল্ডারে রাখো (নাম হুবহু `google-services.json`)।
+### A1. একটা Firebase project বানাও
+1. [Firebase Console](https://console.firebase.google.com) → **Add project** (একটাই, সব OpenFCM অ্যাপের জন্য)।
+2. ভিতরে **Add app → Android** → যেকোনো package দাও (যেমন `com.openfcm.central`) → `google-services.json` download করো।
 
-### ধাপ ২ — Service account → OpenFCM dashboard
+### A2. Client value গুলো বের করো (google-services.json থেকে)
+| .env variable | google-services.json-এর ফিল্ড |
+|---|---|
+| `OPENFCM_FCM_PROJECT_ID` | `project_info.project_id` |
+| `OPENFCM_FCM_SENDER_ID` | `project_info.project_number` |
+| `OPENFCM_FCM_CLIENT_APP_ID` | `client[0].client_info.mobilesdk_app_id` |
+| `OPENFCM_FCM_CLIENT_API_KEY` | `client[0].api_key[0].current_key` |
+| `OPENFCM_FCM_STORAGE_BUCKET` | `project_info.storage_bucket` (optional) |
 
-1. Firebase Console → ⚙️ **Project settings → Service accounts**।
-2. **Generate new private key** → একটা JSON download হবে।
-3. [OpenFCM dashboard](https://beta.kathgolap.online) → তোমার **Application → Settings**।
-4. **FCM Project ID** দাও (Firebase project-এর id) এবং ঐ **service account JSON** upload/paste করো। Save।
+### A3. Service account (পাঠানোর জন্য, secret)
+Firebase → ⚙️ **Project settings → Service accounts → Generate new private key** → JSON download।
 
-### ধাপ ৩ — App ID বসাও
+### A4. VPS-এ backend `.env`-এ বসাও
+```env
+OPENFCM_DRIVER=fcm
+OPENFCM_FCM_PROJECT_ID=your-project-id
+OPENFCM_FCM_SENDER_ID=1234567890
+OPENFCM_FCM_CLIENT_APP_ID=1:1234567890:android:abcdef123456
+OPENFCM_FCM_CLIENT_API_KEY=AIzaSy...
+OPENFCM_FCM_STORAGE_BUCKET=your-project-id.appspot.com
+# service account JSON — এক লাইনে (অথবা _PATH দিয়ে ফাইল path)
+OPENFCM_FCM_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"...", ... }
+```
+তারপর:
+```bash
+php artisan config:clear
+```
+✅ যাচাই: `https://admin.beta.kathgolap.online/v1/fcm-config` (header `X-OpenFCM-App: <App ID>`) দিলে project config ফেরত দিলে ঠিক আছে।
 
-1. Dashboard → **Applications** → তোমার app → **App ID** কপি করো।
-2. এই অ্যাপে `app/src/main/java/com/example/openfcmtest/TestApp.kt` খোলো।
-3. এই লাইন ঠিক করো:
+---
+
+## 📱 Part B — অ্যাপ install (তুমি / যেকোনো developer)
+
+### B1. App ID বসাও
+1. [Dashboard](https://beta.kathgolap.online) → **Applications** → App ID কপি করো।
+2. `test-app/app/src/main/java/com/example/openfcmtest/TestApp.kt`:
    ```kotlin
    const val OPENFCM_APP_ID = "PASTE_YOUR_APP_ID_HERE"   // 👈 তোমার App ID
    const val OPENFCM_BASE_URL = "https://admin.beta.kathgolap.online"
    ```
 
-### ধাপ ৪ — Build + Install
+### B2. Build + Install
+1. Android Studio → **Open** → `test-app` ফোল্ডার।
+2. Gradle sync → ডিভাইস কানেক্ট → **Run ▶️**।
+3. অ্যাপ খুললে **নিজে থেকেই** notification permission চাইবে → **Allow** দাও।
+4. কয়েক সেকেন্ড পর **Device ID** দেখাবে (না দেখালে **Refresh**)।
 
-1. Android Studio → **Open** → `test-app` ফোল্ডার সিলেক্ট করো।
-2. Gradle sync শেষ হতে দাও।
-3. ডিভাইস কানেক্ট করে **Run ▶️** চাপো।
-4. অ্যাপ খুললে **"Enable notifications"** চাপো → permission দাও (Android 13+)।
-5. কয়েক সেকেন্ড পর **Device ID** দেখাবে (না দেখালে **Refresh** চাপো)।
+> ✅ dashboard → **Devices** পেজে ডিভাইসটা দেখা যাবে = registration সফল।
 
-> ✅ যাচাই: dashboard → **Devices** পেজে নতুন ডিভাইসটা দেখা যাবে। তাহলে registration ঠিক আছে।
-
-### ধাপ ৫ — Notification পাঠাও
-
-**Dashboard দিয়ে:** New notification → Title + Body লেখো → Audience **All** (বা topic `all`, বা tag) → **Send**।
-
-**অথবা API দিয়ে** (API key: App → API Keys):
+### B3. Notification পাঠাও
+Dashboard → **New notification** → Title/Body → Audience **All** → **Send**।
+অথবা API:
 ```bash
 curl -X POST https://admin.beta.kathgolap.online/v1/notifications \
   -H "Authorization: Bearer op_live_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{
-    "app_id": "YOUR_APP_ID",
-    "title": "Hello 👋",
-    "body": "OpenFCM test notification",
-    "audience": { "type": "all" }
-  }'
+  -d '{ "app_id":"YOUR_APP_ID", "title":"Hello 👋", "body":"OpenFCM test", "audience":{"type":"all"} }'
 ```
 
-### ধাপ ৬ — ডিভাইসে দেখো 🎉
-
-- **অ্যাপ background/বন্ধ থাকলে:** notification সরাসরি status bar-এ আসবে।
-- **অ্যাপ খোলা থাকলে:** SDK নিজে notification দেখাবে + tap করলে Toast আসবে।
-- Dashboard → **Delivery Logs**-এ status `sent`/`delivered` দেখাবে।
+### B4. ফোনে দেখো 🎉
+- অ্যাপ **বন্ধ/background:** status bar-এ notification।
+- অ্যাপ **খোলা:** SDK দেখায় + tap করলে Toast।
+- Dashboard → **Delivery Logs**-এ `delivered`।
 
 ---
 
-## 🧪 অ্যাপের বাটনগুলো
+## 🩺 আসছে না? — Checklist
+
+1. **Server A1–A4 ঠিকভাবে হয়েছে?** `/v1/fcm-config` কাজ করছে? (সবচেয়ে জরুরি)
+2. `.env` বদলানোর পর **`php artisan config:clear`** দিয়েছ?
+3. `OPENFCM_DRIVER=fcm` (বা `auto`) আছে? service account JSON valid?
+4. ফোনে permission **Allow** করেছ? (Settings → Apps → OpenFCM Test → Notifications)
+5. **Device ID** দেখাচ্ছে? না হলে internet / App ID / baseUrl চেক করো।
+6. Emulator হলে **Google Play আছে এমন image**।
+7. **Logcat** → filter `OpenFCM` (init/config/token/register/receive লগ)।
+
+---
+
+## 🧪 অ্যাপের বাটন
 
 | বাটন | কাজ |
 |------|-----|
-| Enable notifications | Android 13+ permission চায় |
-| Login as test_user | ডিভাইসকে `test_user` external id দেয় (user-target টেস্টের জন্য) |
-| Add tag premium=true | tag বসায় (tag-target টেস্ট) |
-| Subscribe topic 'all' | topic subscribe (topic-target টেস্ট) |
-| Copy Device ID | device id কপি (device-target টেস্ট) |
+| Enable notifications | (auto হয়ে গেলে দরকার নেই) permission চায় |
+| Login as test_user | external id `test_user` — user-target টেস্ট |
+| Add tag premium=true | tag-target টেস্ট |
+| Subscribe topic 'all' | topic-target টেস্ট |
+| Copy Device ID | device-target টেস্ট |
 | Refresh | status রিফ্রেশ |
 
----
-
-## 🩺 Notification আসছে না? — Checklist
-
-1. **Dashboard-এ service account দেওয়া আছে?** না থাকলে simulated mode — ডিভাইসে আসবে না। *(সবচেয়ে common)*
-2. **google-services.json আর service account একই Firebase project-এর?** আলাদা হলে কাজ করবে না।
-3. **FCM Project ID** dashboard-এ ঠিক দেওয়া আছে?
-4. ডিভাইসে **notification permission** দেওয়া আছে? (Settings → Apps → OpenFCM Test → Notifications)
-5. **Device ID** দেখাচ্ছে? না দেখালে registration হয়নি — internet + App ID + baseUrl চেক করো।
-6. Dashboard → **Devices**-এ ডিভাইস **active**? আর **Delivery Logs**-এ error আছে কিনা দেখো।
-7. **Logcat** খোলো, filter `OpenFCM` — এখানে register/token/receive-এর লগ দেখা যাবে (`enableDebugLogging = true`)।
-8. Emulator হলে **Google Play আছে এমন image** ব্যবহার করো (FCM লাগে)।
-
----
-
-## ℹ️ টুকিটাকি
-
-- Package name বদলাতে চাইলে `applicationId` (app/build.gradle.kts), `namespace`, ফোল্ডার, আর Firebase-এর package — সব একসাথে বদলাও।
-- SDK version: `com.github.mobarokOP:OpenFCM:2.0.1` (app/build.gradle.kts)। নতুন version এলে এখানেই বদলাবে।
-- SDK-র পুরো API: রুট রিপোর [README](../README.md) দেখো।
+SDK-র পুরো API: রুট [README](../README.md)।

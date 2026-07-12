@@ -78,6 +78,26 @@ class PushPipelineTest extends TestCase
         ]);
     }
 
+    public function test_fcm_config_endpoint(): void
+    {
+        [, $app] = $this->actingAdmin();
+
+        // Not configured → 404
+        config(['openfcm.default_client' => ['project_id' => null, 'app_id' => null, 'api_key' => null, 'sender_id' => null]]);
+        $this->getJson('/v1/fcm-config', ['X-OpenFCM-App' => $app->id])
+            ->assertNotFound();
+
+        // Configured → returns client config for SDK runtime Firebase init
+        config(['openfcm.default_client' => [
+            'project_id' => 'demo-proj', 'app_id' => '1:1:android:abc',
+            'api_key' => 'AIzaKEY', 'sender_id' => '123456', 'storage_bucket' => 'demo-proj.appspot.com',
+        ]]);
+        $this->getJson('/v1/fcm-config', ['X-OpenFCM-App' => $app->id])
+            ->assertOk()
+            ->assertJsonPath('data.project_id', 'demo-proj')
+            ->assertJsonPath('data.sender_id', '123456');
+    }
+
     public function test_send_requires_auth(): void
     {
         [, $app] = $this->actingAdmin();

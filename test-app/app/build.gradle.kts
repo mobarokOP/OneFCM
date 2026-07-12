@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
+    // No google-services plugin: the OpenFCM SDK initializes Firebase at runtime.
 }
 
 android {
@@ -35,8 +35,8 @@ android {
 }
 
 dependencies {
-    // OpenFCM SDK (pulls in Firebase Messaging transitively)
-    implementation("com.github.mobarokOP:OpenFCM:2.0.1")
+    // OpenFCM SDK (pulls in Firebase Messaging transitively; no google-services.json needed)
+    implementation("com.github.mobarokOP:OpenFCM:3.0.0")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")

@@ -18,4 +18,31 @@ return [
     // the worker simulates delivery so the platform is fully testable
     // without real Firebase credentials.
     'driver' => env('OPENFCM_DRIVER', 'auto'), // auto | fcm | log
+
+    /*
+    |--------------------------------------------------------------------------
+    | Central Firebase project (OneSignal-style)
+    |--------------------------------------------------------------------------
+    | One Firebase project shared by every app so client Android apps need only
+    | the OpenFCM SDK + App ID — no google-services.json. The SDK fetches the
+    | (non-secret) client config from GET /v1/apps/{appId}/fcm-config and
+    | initializes Firebase at runtime; the server sends via the service account.
+    |
+    | Apps may still override with their own project by storing a service
+    | account on the application record; otherwise this default is used.
+    */
+    'default_client' => [
+        'project_id' => env('OPENFCM_FCM_PROJECT_ID'),
+        'app_id' => env('OPENFCM_FCM_CLIENT_APP_ID'),       // mobilesdk_app_id
+        'api_key' => env('OPENFCM_FCM_CLIENT_API_KEY'),
+        'sender_id' => env('OPENFCM_FCM_SENDER_ID'),         // project_number
+        'storage_bucket' => env('OPENFCM_FCM_STORAGE_BUCKET'),
+    ],
+
+    // Service account for the central project. Provide the JSON inline
+    // (OPENFCM_FCM_SERVICE_ACCOUNT_JSON) or a file path.
+    'default_service_account' => env('OPENFCM_FCM_SERVICE_ACCOUNT_JSON')
+        ?: (env('OPENFCM_FCM_SERVICE_ACCOUNT_PATH')
+            ? @file_get_contents(env('OPENFCM_FCM_SERVICE_ACCOUNT_PATH'))
+            : null),
 ];
