@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔔 OpenPush
+# 🔔 OpenFCM
 
 ### Open-source Android Push Notifications — self-hostable, OneSignal-style, powered by FCM
 
@@ -19,9 +19,9 @@ Send targeted push notifications to your Android apps with a Kotlin SDK, a REST 
 
 ---
 
-## ✨ What is OpenPush?
+## ✨ What is OpenFCM?
 
-OpenPush is a complete, multi-tenant push-notification platform for **Android** apps. Drop the SDK into your app, and send notifications from a beautiful dashboard or via a REST API — targeted by user, tag, segment, or topic. Delivery runs through **Firebase Cloud Messaging (HTTP v1)** on a queue-based engine with automatic retries and full delivery analytics.
+OpenFCM is a complete, multi-tenant push-notification platform for **Android** apps. Drop the SDK into your app, and send notifications from a beautiful dashboard or via a REST API — targeted by user, tag, segment, or topic. Delivery runs through **Firebase Cloud Messaging (HTTP v1)** on a queue-based engine with automatic retries and full delivery analytics.
 
 | | |
 |---|---|
@@ -41,7 +41,7 @@ Get push notifications working in your Android app in **5 steps**.
 ### Prerequisites
 - Android Studio, app with **minSdk 24+**
 - A **Firebase project** (free) for your app
-- An **App ID** — create an app in the [OpenPush dashboard](https://beta.kathgolap.online) → **Applications** → **New application**, then copy its App ID.
+- An **App ID** — create an app in the [OpenFCM dashboard](https://beta.kathgolap.online) → **Applications** → **New application**, then copy its App ID.
 
 ---
 
@@ -63,7 +63,7 @@ dependencyResolutionManagement {
 ```kotlin
 // app/build.gradle.kts
 dependencies {
-    implementation("com.github.mobarokOP:OpenFCM:1.0.0")
+    implementation("com.github.mobarokOP:OpenFCM:2.0.0")
     // Firebase Messaging is pulled in transitively — no extra FCM dependency needed.
 }
 ```
@@ -74,7 +74,7 @@ dependencies {
 
 ### Step 2 · Connect Firebase
 
-OpenPush delivers through **your** Firebase project, so the app and the OpenPush server must point at the same project.
+OpenFCM delivers through **your** Firebase project, so the app and the OpenFCM server must point at the same project.
 
 1. In the [Firebase Console](https://console.firebase.google.com), add your Android app and download **`google-services.json`** into your `app/` folder.
 2. Add the Google Services plugin:
@@ -90,25 +90,25 @@ plugins {
 }
 ```
 
-3. In Firebase → **Project settings → Service accounts → Generate new private key**. Upload that JSON in the OpenPush dashboard under your app's **Settings → FCM**. *(This lets the server send on your behalf.)*
+3. In Firebase → **Project settings → Service accounts → Generate new private key**. Upload that JSON in the OpenFCM dashboard under your app's **Settings → FCM**. *(This lets the server send on your behalf.)*
 
 ---
 
 ### Step 3 · Initialize the SDK
 
-Initialize once in your `Application` class. Point `baseUrl` at the OpenPush backend.
+Initialize once in your `Application` class. Point `baseUrl` at the OpenFCM backend.
 
 ```kotlin
 // MyApp.kt
 import android.app.Application
-import com.openpush.sdk.OpenPush
+import com.openfcm.sdk.OpenFCM
 
 class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        OpenPush.init(this, appId = "YOUR_APP_ID") {
-            baseUrl = "https://admin.beta.kathgolap.online" // your OpenPush server
+        OpenFCM.init(this, appId = "YOUR_APP_ID") {
+            baseUrl = "https://admin.beta.kathgolap.online" // your OpenFCM server
             defaultChannelId = "general"
             defaultChannelName = "General"
             enableDebugLogging = BuildConfig.DEBUG
@@ -130,8 +130,8 @@ That's it — the device is registered automatically and starts receiving pushes
 
 ```kotlin
 // In your first Activity
-if (!OpenPush.areNotificationsEnabled()) {
-    OpenPush.requestNotificationPermission(this)
+if (!OpenFCM.areNotificationsEnabled()) {
+    OpenFCM.requestNotificationPermission(this)
 }
 ```
 
@@ -141,23 +141,23 @@ if (!OpenPush.areNotificationsEnabled()) {
 
 ```kotlin
 // Link this device to your app's user (after they log in)
-OpenPush.login("user_12345")
+OpenFCM.login("user_12345")
 
 // Attributes for targeting
-OpenPush.addTag("premium", "true")
-OpenPush.addTags(mapOf("language" to "bn", "city" to "Rangpur"))
+OpenFCM.addTag("premium", "true")
+OpenFCM.addTags(mapOf("language" to "bn", "city" to "Rangpur"))
 
 // Broadcast channels
-OpenPush.subscribeTopic("announcements")
+OpenFCM.subscribeTopic("announcements")
 
 // On sign-out
-OpenPush.logout()
+OpenFCM.logout()
 ```
 
 **Handle notification taps & deep links:**
 
 ```kotlin
-OpenPush.setNotificationOpenHandler { payload ->
+OpenFCM.setNotificationOpenHandler { payload ->
     // payload.deepLink, payload.notificationId, payload.data[...]
     payload.deepLink?.let { openDeepLink(it) }
 }
@@ -168,18 +168,18 @@ OpenPush.setNotificationOpenHandler { payload ->
 
 | Method | Description |
 |--------|-------------|
-| `OpenPush.init(context, appId) { … }` | Initialize, register device, sync FCM token |
-| `OpenPush.login(externalId)` | Associate device with your user id |
-| `OpenPush.logout()` | Clear the user association |
-| `OpenPush.addTag(key, value)` / `addTags(map)` | Set targeting tags |
-| `OpenPush.removeTag(key)` / `removeTags(list)` | Remove tags |
-| `OpenPush.subscribeTopic(name)` / `unsubscribeTopic(name)` | Manage topic subscriptions |
-| `OpenPush.setNotificationOpenHandler { payload -> }` | Handle taps / deep links |
-| `OpenPush.requestNotificationPermission(activity)` | Android 13+ runtime permission |
-| `OpenPush.areNotificationsEnabled()` | Check permission state |
-| `OpenPush.deviceId` / `OpenPush.externalId` | Introspect current registration |
+| `OpenFCM.init(context, appId) { … }` | Initialize, register device, sync FCM token |
+| `OpenFCM.login(externalId)` | Associate device with your user id |
+| `OpenFCM.logout()` | Clear the user association |
+| `OpenFCM.addTag(key, value)` / `addTags(map)` | Set targeting tags |
+| `OpenFCM.removeTag(key)` / `removeTags(list)` | Remove tags |
+| `OpenFCM.subscribeTopic(name)` / `unsubscribeTopic(name)` | Manage topic subscriptions |
+| `OpenFCM.setNotificationOpenHandler { payload -> }` | Handle taps / deep links |
+| `OpenFCM.requestNotificationPermission(activity)` | Android 13+ runtime permission |
+| `OpenFCM.areNotificationsEnabled()` | Check permission state |
+| `OpenFCM.deviceId` / `OpenFCM.externalId` | Introspect current registration |
 
-**Config options** (`OpenPush.init(...) { }`): `baseUrl`, `defaultChannelId`, `defaultChannelName`, `smallIconResId`, `accentColor`, `enableDebugLogging`, `autoRegister`, `trackSessions`.
+**Config options** (`OpenFCM.init(...) { }`): `baseUrl`, `defaultChannelId`, `defaultChannelName`, `smallIconResId`, `accentColor`, `enableDebugLogging`, `autoRegister`, `trackSessions`.
 
 All calls are safe on the main thread and before init completes — they queue internally and never block the UI. Failed network calls are retried offline via WorkManager.
 
@@ -225,7 +225,7 @@ A modern React admin console — compose notifications with a live preview, buil
 
 ## 🏗️ Self-hosting the backend
 
-OpenPush is fully self-hostable (Laravel · MySQL · Redis · FCM).
+OpenFCM is fully self-hostable (Laravel · MySQL · Redis · FCM).
 
 ```bash
 git clone https://github.com/mobarokOP/OpenFCM.git
@@ -242,7 +242,7 @@ Or run the backend directly for development:
 ```bash
 cd backend
 composer install
-php artisan migrate --seed        # demo login: demo@openpush.test / password
+php artisan migrate --seed        # demo login: demo@openfcm.test / password
 php artisan serve                 # API on http://localhost:8000/v1
 php artisan queue:work --queue=push
 ```

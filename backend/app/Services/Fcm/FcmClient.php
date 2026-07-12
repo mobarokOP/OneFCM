@@ -32,7 +32,7 @@ class FcmClient
             return ['ok' => false, 'message_id' => null, 'error_code' => 'AUTH_ERROR', 'error' => $e->getMessage(), 'unregister' => false];
         }
 
-        $url = sprintf(config('openpush.fcm.endpoint'), $app->fcm_project_id);
+        $url = sprintf(config('openfcm.fcm.endpoint'), $app->fcm_project_id);
 
         $response = Http::withToken($accessToken)
             ->acceptJson()
@@ -63,7 +63,7 @@ class FcmClient
 
     private function driverFor(Application $app): string
     {
-        $configured = config('openpush.driver', 'auto');
+        $configured = config('openfcm.driver', 'auto');
 
         if ($configured === 'fcm') {
             return 'fcm';
@@ -80,10 +80,10 @@ class FcmClient
     {
         return Cache::remember(
             "fcm:token:{$app->id}",
-            config('openpush.fcm.token_cache_ttl'),
+            config('openfcm.fcm.token_cache_ttl'),
             function () use ($app) {
                 $creds = new ServiceAccountCredentials(
-                    config('openpush.fcm.scope'),
+                    config('openfcm.fcm.scope'),
                     $app->fcmServiceAccountArray()
                 );
 

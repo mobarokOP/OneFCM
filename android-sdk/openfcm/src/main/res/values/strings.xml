@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="openfcm_default_channel_id">openfcm_default</string>
+    <string name="openfcm_default_channel_name">Notifications</string>
+    <string name="openfcm_default_channel_description">General notifications</string>
+</resources>

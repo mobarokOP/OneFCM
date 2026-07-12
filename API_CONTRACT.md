@@ -1,4 +1,4 @@
-# OpenPush — API Contract (v1)
+# OpenFCM — API Contract (v1)
 
 Single source of truth for backend, dashboard, and Android SDK. All parts build to THIS.
 
@@ -14,7 +14,7 @@ Single source of truth for backend, dashboard, and Android SDK. All parts build 
 - Success single shape: `{ "data": { ... } }`
 
 ## Auth schemes
-1. **SDK auth** (public, from Android devices): body/header carries `app_id` (public UUID). No secret. Header `X-OpenPush-App: <app_id>` OR `app_id` in body.
+1. **SDK auth** (public, from Android devices): body/header carries `app_id` (public UUID). No secret. Header `X-OpenFCM-App: <app_id>` OR `app_id` in body.
 2. **REST API Key** (server-to-server send): header `Authorization: Bearer <rest_api_key>`. Key belongs to one application.
 3. **Dashboard JWT** (admin users): header `Authorization: Bearer <jwt>`. Obtained from `/v1/auth/login`. Scoped to an account/tenant.
 

@@ -35,13 +35,13 @@ class SendPushBatchJob implements ShouldQueue
 
     public function tries(): int
     {
-        return config('openpush.max_retries', 3);
+        return config('openfcm.max_retries', 3);
     }
 
     /** @return array<int,int> backoff seconds per attempt */
     public function backoff(): array
     {
-        return config('openpush.retry_backoff', [10, 60, 300]);
+        return config('openfcm.retry_backoff', [10, 60, 300]);
     }
 
     public function handle(FcmClient $fcm): void

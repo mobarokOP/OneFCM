@@ -1,6 +1,6 @@
-# OpenPush — Admin Dashboard
+# OpenFCM — Admin Dashboard
 
-Modern admin console for **OpenPush**, an open-source, self-hostable Android push‑notification platform (OneSignal‑style) built on Firebase Cloud Messaging.
+Modern admin console for **OpenFCM**, an open-source, self-hostable Android push‑notification platform (OneSignal‑style) built on Firebase Cloud Messaging.
 
 Built with Vite + React 18 + TypeScript, Tailwind CSS v3, React Router v6, TanStack Query, axios, Recharts, react‑hook‑form + zod, Zustand and sonner.
 
@@ -22,7 +22,7 @@ Built with Vite + React 18 + TypeScript, Tailwind CSS v3, React Router v6, TanSt
 ## Requirements
 
 - Node.js 18+ (tested on Node 25)
-- The OpenPush backend running on `http://localhost:8000` (see `API_CONTRACT.md`)
+- The OpenFCM backend running on `http://localhost:8000` (see `API_CONTRACT.md`)
 
 ## Setup
 

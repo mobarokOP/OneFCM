@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         AdminUser::create([
             'account_id' => $account->id,
             'name' => 'Demo Owner',
-            'email' => 'demo@openpush.test',
+            'email' => 'demo@openfcm.test',
             'password' => 'password',
             'role' => 'owner',
         ]);
@@ -78,6 +78,6 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $this->command->info('Seeded: login demo@openpush.test / password  (app: '.$app->id.')');
+        $this->command->info('Seeded: login demo@openfcm.test / password  (app: '.$app->id.')');
     }
 }

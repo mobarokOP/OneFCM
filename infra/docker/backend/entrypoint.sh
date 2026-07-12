@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# OpenPush backend entrypoint
+# OpenFCM backend entrypoint
 # -----------------------------------------------------------------------------
 # Shared by app / queue / scheduler. Bootstrap steps (migrations, config cache)
 # run ONCE, on the container whose CONTAINER_ROLE=app, so multiple queue

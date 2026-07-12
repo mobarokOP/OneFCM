@@ -26,7 +26,7 @@ class FcmMessage
             ->all();
 
         // Custom data travels alongside tracking metadata.
-        $data['openpush_notification_id'] = (string) $n->id;
+        $data['openfcm_notification_id'] = (string) $n->id;
         if ($n->deep_link) {
             $data['deep_link'] = $n->deep_link;
         }
@@ -37,7 +37,7 @@ class FcmMessage
             'image' => $n->image_url,
             'icon' => $n->small_icon,
             'channel_id' => $n->channel_id,
-            'click_action' => $n->deep_link ? 'OPENPUSH_DEEPLINK' : null,
+            'click_action' => $n->deep_link ? 'OPENFCM_DEEPLINK' : null,
         ], fn ($v) => $v !== null && $v !== '');
 
         return array_filter([

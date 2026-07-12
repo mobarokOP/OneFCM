@@ -20,9 +20,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "OpenPush"
+rootProject.name = "OpenFCM"
 
-include(":openpush")
+include(":openfcm")
 
 // The sample app requires a real google-services.json and is only for local dev.
 // Skip it on JitPack (which sets VERSION) so publishing the library never needs it.

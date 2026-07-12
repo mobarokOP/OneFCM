@@ -16,6 +16,6 @@ class NotificationDispatcher
         $notification->update(['status' => 'queued']);
 
         DispatchNotificationJob::dispatch($notification->id)
-            ->onQueue(config('openpush.queue'));
+            ->onQueue(config('openfcm.queue'));
     }
 }

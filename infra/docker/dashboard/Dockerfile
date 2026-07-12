@@ -1,5 +1,5 @@
 # =============================================================================
-# OpenPush dashboard image — Vite React SPA
+# OpenFCM dashboard image — Vite React SPA
 # -----------------------------------------------------------------------------
 # Multi-stage:
 #   1. deps        — install npm dependencies (cached on lockfile)

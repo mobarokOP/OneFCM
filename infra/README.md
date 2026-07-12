@@ -1,6 +1,6 @@
-# OpenPush — Infrastructure
+# OpenFCM — Infrastructure
 
-DevOps layer for **OpenPush**, an Android push-notification SaaS built on
+DevOps layer for **OpenFCM**, an Android push-notification SaaS built on
 **Laravel 11 (PHP 8.3) + React (Vite) + Redis 7 + MySQL 8**, delivering via
 **Firebase Cloud Messaging HTTP v1**.
 

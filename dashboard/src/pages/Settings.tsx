@@ -91,7 +91,7 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Appearance</CardTitle>
-            <CardDescription>Choose how OpenPush looks to you.</CardDescription>
+            <CardDescription>Choose how OpenFCM looks to you.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3 sm:max-w-sm">

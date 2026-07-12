@@ -7,17 +7,17 @@ plugins {
 }
 
 android {
-    namespace = "com.openpush.sample"
+    namespace = "com.openfcm.sample"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.openpush.sample"
+        applicationId = "com.openfcm.sample"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
 
-        // Replace with a real app id issued by the OpenPush dashboard.
+        // Replace with a real app id issued by the OpenFCM dashboard.
         manifestPlaceholders["openPushAppId"] = "REPLACE_WITH_APP_ID"
     }
 
@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":openpush"))
+    implementation(project(":openfcm"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -15,7 +15,8 @@ class ResolveApplication
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $appId = $request->header('X-OpenPush-App')
+        $appId = $request->header('X-OpenFCM-App')
+            ?? $request->header('X-OpenPush-App') // back-compat: SDK <= 1.0.0
             ?? $request->input('app_id')
             ?? $request->query('app_id');
 

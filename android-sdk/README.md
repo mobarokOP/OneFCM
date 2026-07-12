@@ -1,8 +1,8 @@
-# OpenPush Android SDK
+# OpenFCM Android SDK
 
-A lightweight, Kotlin-first client library for the **OpenPush** self-hostable
+A lightweight, Kotlin-first client library for the **OpenFCM** self-hostable
 push notification platform. Comparable in shape to OneSignal's Android SDK, but
-talking to *your* backend over the [OpenPush v1 API](../API_CONTRACT.md) and
+talking to *your* backend over the [OpenFCM v1 API](../API_CONTRACT.md) and
 delivering via **Firebase Cloud Messaging (HTTP v1)**.
 
 - One-line initialization
@@ -29,10 +29,10 @@ android-sdk/
 ├── gradle/
 │   ├── libs.versions.toml            # version catalog
 │   └── wrapper/gradle-wrapper.properties
-├── openpush/                         # ← the publishable library (AAR)
+├── openfcm/                         # ← the publishable library (AAR)
 │   ├── build.gradle.kts
 │   ├── consumer-rules.pro
-│   └── src/main/…                    # com.openpush.sdk
+│   └── src/main/…                    # com.openfcm.sdk
 └── sample/                           # demo app exercising the full API
 ```
 
@@ -56,7 +56,7 @@ dependencyResolutionManagement {
 
 // app/build.gradle.kts
 dependencies {
-    implementation("com.github.mobarokOP:OpenFCM:1.0.0")
+    implementation("com.github.mobarokOP:OpenFCM:2.0.0")
     // Firebase Messaging is exposed transitively (api) by the SDK.
 }
 ```
@@ -70,8 +70,8 @@ dependencies {
 Or build the AAR locally:
 
 ```bash
-./gradlew :openpush:assembleRelease
-# → openpush/build/outputs/aar/openpush-release.aar
+./gradlew :openfcm:assembleRelease
+# → openfcm/build/outputs/aar/openfcm-release.aar
 ```
 
 > The wrapper JAR is not committed. Run `gradle wrapper --gradle-version 8.7`
@@ -93,7 +93,7 @@ project:
    }
    ```
 
-4. Upload the Firebase **service-account JSON** to the OpenPush dashboard when
+4. Upload the Firebase **service-account JSON** to the OpenFCM dashboard when
    creating the application (`POST /v1/apps`) so the backend can send via FCM
    HTTP v1.
 
@@ -112,7 +112,7 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        OpenPush.init(this, "YOUR_APP_ID") {
+        OpenFCM.init(this, "YOUR_APP_ID") {
             baseUrl = "https://push.example.com"  // your backend
             enableDebugLogging = BuildConfig.DEBUG
             defaultChannelId = "general"
@@ -121,7 +121,7 @@ class MyApp : Application() {
             // accentColor = Color.parseColor("#6200EE")
         }
 
-        OpenPush.setNotificationOpenHandler { payload ->
+        OpenFCM.setNotificationOpenHandler { payload ->
             // Route the deep link / update UI.
             startActivity(deepLinkIntent(payload.deepLink))
         }
@@ -139,7 +139,7 @@ registration complete.
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        OpenPush.requestNotificationPermission(this)  // no-op below API 33
+        OpenFCM.requestNotificationPermission(this)  // no-op below API 33
     }
 }
 ```
@@ -150,20 +150,20 @@ class MainActivity : ComponentActivity() {
 
 | Method | Description | Backend endpoint |
 | --- | --- | --- |
-| `OpenPush.init(context, appId, config?)` | Store app id, build API client, register device, sync FCM token, start session tracking. | `POST /v1/devices/register` |
-| `OpenPush.login(externalId)` | Associate this device with an external user id. | `POST /v1/users/login` |
-| `OpenPush.logout()` | Remove the external-id association. | `POST /v1/users/logout` |
-| `OpenPush.addTag(key, value)` | Upsert a single tag. | `POST /v1/tags` |
-| `OpenPush.addTags(map)` | Upsert multiple tags. | `POST /v1/tags` |
-| `OpenPush.removeTag(key)` | Delete one tag. | `DELETE /v1/tags` |
-| `OpenPush.removeTags(keys)` | Delete multiple tags. | `DELETE /v1/tags` |
-| `OpenPush.subscribeTopic(topic)` | Subscribe device to a topic. | `POST /v1/topics/subscribe` |
-| `OpenPush.unsubscribeTopic(topic)` | Unsubscribe device from a topic. | `POST /v1/topics/unsubscribe` |
-| `OpenPush.setNotificationOpenHandler { payload -> }` | Callback on notification tap (buffers if set late). | — |
-| `OpenPush.requestNotificationPermission(activity)` | Request `POST_NOTIFICATIONS` on API 33+. | — |
-| `OpenPush.areNotificationsEnabled()` | Whether notifications can be shown. | — |
-| `OpenPush.deviceId` | Backend device id (null until registered). | — |
-| `OpenPush.externalId` | Current external id, if logged in. | — |
+| `OpenFCM.init(context, appId, config?)` | Store app id, build API client, register device, sync FCM token, start session tracking. | `POST /v1/devices/register` |
+| `OpenFCM.login(externalId)` | Associate this device with an external user id. | `POST /v1/users/login` |
+| `OpenFCM.logout()` | Remove the external-id association. | `POST /v1/users/logout` |
+| `OpenFCM.addTag(key, value)` | Upsert a single tag. | `POST /v1/tags` |
+| `OpenFCM.addTags(map)` | Upsert multiple tags. | `POST /v1/tags` |
+| `OpenFCM.removeTag(key)` | Delete one tag. | `DELETE /v1/tags` |
+| `OpenFCM.removeTags(keys)` | Delete multiple tags. | `DELETE /v1/tags` |
+| `OpenFCM.subscribeTopic(topic)` | Subscribe device to a topic. | `POST /v1/topics/subscribe` |
+| `OpenFCM.unsubscribeTopic(topic)` | Unsubscribe device from a topic. | `POST /v1/topics/unsubscribe` |
+| `OpenFCM.setNotificationOpenHandler { payload -> }` | Callback on notification tap (buffers if set late). | — |
+| `OpenFCM.requestNotificationPermission(activity)` | Request `POST_NOTIFICATIONS` on API 33+. | — |
+| `OpenFCM.areNotificationsEnabled()` | Whether notifications can be shown. | — |
+| `OpenFCM.deviceId` | Backend device id (null until registered). | — |
+| `OpenFCM.externalId` | Current external id, if logged in. | — |
 
 Automatic (no direct call needed):
 
@@ -198,10 +198,10 @@ It keeps the public facade, the Firebase service, and the kotlinx.serialization
 models/serializers. No extra rules are required in your app. For reference:
 
 ```proguard
--keep public class com.openpush.sdk.OpenPush { public *; }
--keep public class com.openpush.sdk.OpenPushConfig { public *; }
--keep class com.openpush.sdk.messaging.OpenPushFirebaseMessagingService { *; }
--keepclasseswithmembers class com.openpush.sdk.api.** {
+-keep public class com.openfcm.sdk.OpenFCM { public *; }
+-keep public class com.openfcm.sdk.OpenFCMConfig { public *; }
+-keep class com.openfcm.sdk.messaging.OpenFCMFirebaseMessagingService { *; }
+-keepclasseswithmembers class com.openfcm.sdk.api.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 ```
@@ -222,7 +222,7 @@ curl -X POST https://push.example.com/v1/notifications \
   -d '{
         "app_id": "YOUR_APP_ID",
         "title": "Hello",
-        "body": "From OpenPush",
+        "body": "From OpenFCM",
         "image_url": "https://picsum.photos/600/300",
         "deep_link": "opsample://open",
         "priority": "high",

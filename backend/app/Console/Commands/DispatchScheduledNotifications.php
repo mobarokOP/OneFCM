@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class DispatchScheduledNotifications extends Command
 {
-    protected $signature = 'openpush:dispatch-scheduled';
+    protected $signature = 'openfcm:dispatch-scheduled';
 
     protected $description = 'Promote due scheduled notifications into the delivery queue.';
 

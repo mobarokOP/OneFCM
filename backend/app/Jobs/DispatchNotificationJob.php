@@ -34,7 +34,7 @@ class DispatchNotificationJob implements ShouldQueue
 
         $notification->update(['status' => 'sending']);
 
-        $batchSize = config('openpush.batch_size');
+        $batchSize = config('openfcm.batch_size');
         $total = 0;
 
         $resolver->query($notification->application, $notification->audience)
@@ -55,7 +55,7 @@ class DispatchNotificationJob implements ShouldQueue
                 NotificationTarget::insert($rows);
 
                 SendPushBatchJob::dispatch($notification->id, $ids)
-                    ->onQueue(config('openpush.queue'));
+                    ->onQueue(config('openfcm.queue'));
             });
 
         $notification->update(['recipients_count' => $total]);

@@ -7,13 +7,13 @@
     <application
         android:name=".SampleApplication"
         android:allowBackup="true"
-        android:label="OpenPush Sample"
+        android:label="OpenFCM Sample"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
         <!-- App id injected from the Gradle manifestPlaceholder. -->
         <meta-data
-            android:name="com.openpush.APP_ID"
+            android:name="com.openfcm.APP_ID"
             android:value="${openPushAppId}" />
 
         <activity

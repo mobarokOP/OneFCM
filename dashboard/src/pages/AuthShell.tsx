@@ -16,7 +16,7 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15">
             <Bell className="h-5 w-5" />
           </div>
-          <span className="text-lg font-semibold">OpenPush</span>
+          <span className="text-lg font-semibold">OpenFCM</span>
         </div>
         <div>
           <h1 className="max-w-md text-4xl font-semibold leading-tight">
@@ -36,7 +36,7 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
             ))}
           </ul>
         </div>
-        <p className="text-sm text-primary-foreground/70">© {new Date().getFullYear()} OpenPush</p>
+        <p className="text-sm text-primary-foreground/70">© {new Date().getFullYear()} OpenFCM</p>
       </div>
 
       <div className="flex w-full flex-col lg:w-1/2">
@@ -50,7 +50,7 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                   <Bell className="h-5 w-5" />
                 </div>
-                <span className="text-lg font-semibold">OpenPush</span>
+                <span className="text-lg font-semibold">OpenFCM</span>
               </div>
             </div>
             <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>

@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Promote due scheduled notifications every minute.
-Schedule::command('openpush:dispatch-scheduled')->everyMinute()->withoutOverlapping();
+Schedule::command('openfcm:dispatch-scheduled')->everyMinute()->withoutOverlapping();

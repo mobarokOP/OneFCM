@@ -3,7 +3,7 @@ backend/vendor/
 backend/node_modules/
 backend/.env
 backend/database/database.sqlite
-backend/openpush
+backend/openfcm
 backend/.phpunit.result.cache
 composer
 composer.phar

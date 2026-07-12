@@ -39,7 +39,7 @@ export default function Login() {
   })
 
   return (
-    <AuthShell title="Sign in to OpenPush" subtitle="Manage devices, segments and push campaigns.">
+    <AuthShell title="Sign in to OpenFCM" subtitle="Manage devices, segments and push campaigns.">
       <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
         <div>
           <Label htmlFor="email">Email</Label>

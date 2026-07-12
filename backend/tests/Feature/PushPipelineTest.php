@@ -65,7 +65,7 @@ class PushPipelineTest extends TestCase
 
         // After sync delivery the notification is sent + logged.
         $detail = $this->withToken($token)
-            ->withHeader('X-OpenPush-App', $app->id)
+            ->withHeader('X-OpenFCM-App', $app->id)
             ->getJson("/v1/notifications/{$notificationId}")
             ->assertOk();
 

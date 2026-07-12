@@ -1,5 +1,5 @@
 # =============================================================================
-# OpenPush backend image — Laravel 11 API on php-fpm 8.3
+# OpenFCM backend image — Laravel 11 API on php-fpm 8.3
 # -----------------------------------------------------------------------------
 # Multi-stage:
 #   1. composer   — resolve PHP dependencies with the composer CLI
@@ -70,7 +70,7 @@ RUN pecl install redis \
     && docker-php-ext-enable redis
 
 # Production PHP + opcache tuning.
-COPY infra/docker/backend/php.ini /usr/local/etc/php/conf.d/zz-openpush.ini
+COPY infra/docker/backend/php.ini /usr/local/etc/php/conf.d/zz-openfcm.ini
 
 # Lightweight php-fpm healthcheck helper used by the compose healthchecks.
 COPY infra/docker/backend/php-fpm-healthcheck.sh /usr/bin/php-fpm-healthcheck
@@ -84,11 +84,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends supervisor \
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # ---- Non-root user -----------------------------------------------------------
-# php-fpm workers must not run as root. We create an unprivileged `openpush`
+# php-fpm workers must not run as root. We create an unprivileged `openfcm`
 # user and repoint the default www-data pool to it.
-RUN groupadd -g 1000 openpush \
-    && useradd -u 1000 -g openpush -m -s /bin/bash openpush
-RUN sed -i 's/^user = www-data/user = openpush/; s/^group = www-data/group = openpush/' \
+RUN groupadd -g 1000 openfcm \
+    && useradd -u 1000 -g openfcm -m -s /bin/bash openfcm
+RUN sed -i 's/^user = www-data/user = openfcm/; s/^group = www-data/group = openfcm/' \
         /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www/html
@@ -107,7 +107,7 @@ RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
 ENV APP_ENV=local
-USER openpush
+USER openfcm
 # Source is bind-mounted by docker-compose.override.yml; nothing baked in.
 CMD ["php-fpm"]
 
@@ -127,9 +127,9 @@ COPY backend/ ./
 RUN composer dump-autoload --optimize --classmap-authoritative --no-dev
 
 # Laravel needs storage/ and bootstrap/cache writable by the runtime user.
-RUN chown -R openpush:openpush /var/www/html \
+RUN chown -R openfcm:openfcm /var/www/html \
     && chmod -R ug+rwX storage bootstrap/cache
 
-USER openpush
+USER openfcm
 EXPOSE 9000
 CMD ["php-fpm"]

@@ -45,7 +45,7 @@ export default function Topics() {
           <EmptyState
             icon={Radio}
             title="No topics yet"
-            description="Topics are created automatically when devices subscribe through the SDK (OpenPush.subscribeTopic)."
+            description="Topics are created automatically when devices subscribe through the SDK (OpenFCM.subscribeTopic)."
           />
         </Card>
       ) : (

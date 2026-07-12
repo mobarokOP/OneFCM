@@ -46,7 +46,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
               <Bell className="h-5 w-5" />
             </div>
             <div className="leading-tight">
-              <p className="text-sm font-semibold">OpenPush</p>
+              <p className="text-sm font-semibold">OpenFCM</p>
               <p className="text-xs text-muted-foreground">Push Console</p>
             </div>
           </div>
@@ -78,7 +78,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
         </nav>
 
         <div className="border-t border-border p-4">
-          <p className="text-xs text-muted-foreground">OpenPush · Android push SaaS</p>
+          <p className="text-xs text-muted-foreground">OpenFCM · Android push SaaS</p>
         </div>
       </aside>
     </>
