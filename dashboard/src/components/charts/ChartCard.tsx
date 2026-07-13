@@ -11,8 +11,8 @@ interface ChartCardProps {
 export function ChartCard({ title, description, children, actions }: ChartCardProps) {
   return (
     <Card>
-      <CardHeader className="flex-row items-start justify-between">
-        <div>
+      <CardHeader className="flex-row flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
           <CardTitle>{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>

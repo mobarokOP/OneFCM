@@ -39,6 +39,7 @@
   <a href="index.html#how">How it works</a>
   <a href="docs.html">Docs</a>
   <a href="https://github.com/mobarokOP/OneFCM">GitHub</a>
+  <a class="btn btn-ghost" style="margin-top:10px" href="https://dashboard.onefcm.com/login">Log in</a>
   <a class="btn btn-primary" style="margin-top:8px" href="https://dashboard.onefcm.com/register">Sign up free</a>
 </div>
 
@@ -228,6 +229,7 @@ OpenFCM.<span class="tk-f">removeTag</span>(<span class="tk-s">"premium"</span>)
 OpenFCM.<span class="tk-f">subscribeTopic</span>(<span class="tk-s">"announcements"</span>)
 OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcements"</span>)</pre>
         </div>
+        <div class="table-scroll">
         <table>
           <thead><tr><th>Primitive</th><th>What it enables</th></tr></thead>
           <tbody>
@@ -236,6 +238,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
             <tr><td><code>subscribeTopic</code></td><td>Broadcast to everyone subscribed via the <code>topic</code> audience — great for opt-in channels like “announcements”.</td></tr>
           </tbody>
         </table>
+        </div>
       </section>
 
       <!-- 8 · DEEP LINKS & TAP HANDLING -->
@@ -264,6 +267,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
       <!-- 9 · TROUBLESHOOTING -->
       <section id="troubleshooting">
         <h2>Troubleshooting</h2>
+        <div class="table-scroll">
         <table>
           <thead><tr><th>Symptom</th><th>Check</th><th>Fix</th></tr></thead>
           <tbody>
@@ -284,6 +288,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
             </tr>
           </tbody>
         </table>
+        </div>
         <div class="callout warn">
           <span>⚠️</span>
           <div><strong style="color:var(--text)">OEM battery savers</strong> (Xiaomi/MIUI, Huawei, Oppo, Vivo, some Samsung modes) aggressively kill background processes and can delay or drop pushes on those devices. Ask affected users to exempt your app from battery optimization — this is an OS-level behaviour no push provider can bypass.</div>
@@ -348,6 +353,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
       <section id="audiences">
         <h2>Audiences</h2>
         <p>The <code>audience</code> object decides who receives the notification. Six types:</p>
+        <div class="table-scroll">
         <table>
           <thead><tr><th>Type</th><th>Targets</th><th>Example <code>audience</code></th></tr></thead>
           <tbody>
@@ -359,6 +365,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
             <tr><td><code>topic</code></td><td>Devices subscribed via <code>subscribeTopic()</code></td><td><code>{"type":"topic","value":"announcements"}</code></td></tr>
           </tbody>
         </table>
+        </div>
         <p>Tag filter operators: <code>eq</code>, <code>neq</code>, <code>exists</code>, <code>contains</code> — the same operators power dynamic segments.</p>
       </section>
 
@@ -417,6 +424,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
       <section id="sdk-reference">
         <h2>SDK reference</h2>
         <p>Everything on the <code>OpenFCM</code> singleton (<code>com.openfcm.sdk</code>):</p>
+        <div class="table-scroll">
         <table>
           <thead><tr><th>Member</th><th>Description</th></tr></thead>
           <tbody>
@@ -436,7 +444,9 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
             <tr><td><code>externalId</code></td><td>The user id set via <code>login()</code>, if any.</td></tr>
           </tbody>
         </table>
+        </div>
         <h3>Config options — <code>OpenFCM.init(…) { }</code></h3>
+        <div class="table-scroll">
         <table>
           <thead><tr><th>Option</th><th>Purpose</th></tr></thead>
           <tbody>
@@ -450,6 +460,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
             <tr><td><code>promptForPermissionOnInit</code></td><td>Auto-prompt for notification permission on the first Activity (default true).</td></tr>
           </tbody>
         </table>
+        </div>
         <div class="callout info reveal">
           <span>🧵</span>
           <div>All calls are safe on the main thread and <em>before</em> init completes — they queue internally and never block the UI. Failed network calls are retried offline via WorkManager.</div>
@@ -471,6 +482,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
   }
 }</pre>
         </div>
+        <div class="table-scroll">
         <table>
           <thead><tr><th>Code</th><th>HTTP</th><th>Meaning</th><th>Fix</th></tr></thead>
           <tbody>
@@ -482,6 +494,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
             <tr><td><code>in_flight</code></td><td>422</td><td>The action conflicts with a send already in progress (e.g. cancelling a completed notification).</td><td>Wait for the current state to settle, then retry or check status first.</td></tr>
           </tbody>
         </table>
+        </div>
         <div class="callout info">
           <span>🚀</span>
           <div>Stuck on something not covered here? Open an issue on <a href="https://github.com/mobarokOP/OneFCM" target="_blank" rel="noreferrer" style="color:var(--brand)">GitHub</a> — or head back to the <a href="https://dashboard.onefcm.com" style="color:var(--brand)">dashboard</a> and send your first push.</div>

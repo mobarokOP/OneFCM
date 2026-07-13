@@ -49,12 +49,27 @@ export default function Logs() {
   }
 
   const columns: Column<DeliveryLog>[] = [
-    { key: 'device', header: 'Device', render: (l) => <span className="font-mono text-xs">{l.device_id}</span> },
+    {
+      key: 'device',
+      header: 'Device',
+      render: (l) => (
+        <span className="inline-block max-w-[14rem] truncate align-bottom font-mono text-xs" title={l.device_id}>
+          {l.device_id}
+        </span>
+      ),
+    },
     { key: 'status', header: 'Status', render: (l) => <StatusBadge status={l.status} /> },
     {
       key: 'fcm',
       header: 'FCM message ID',
-      render: (l) => <span className="font-mono text-xs text-muted-foreground">{l.fcm_message_id || '—'}</span>,
+      render: (l) => (
+        <span
+          className="inline-block max-w-[16rem] truncate align-bottom font-mono text-xs text-muted-foreground"
+          title={l.fcm_message_id || undefined}
+        >
+          {l.fcm_message_id || '—'}
+        </span>
+      ),
     },
     {
       key: 'error',

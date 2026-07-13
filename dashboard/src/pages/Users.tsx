@@ -42,10 +42,12 @@ export default function UsersPage() {
       header: 'External ID',
       render: (u) => (
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-xs font-semibold text-accent-foreground">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-xs font-semibold text-accent-foreground">
             {initials(u.external_id ?? 'U')}
           </span>
-          <span className="font-medium">{u.external_id || <span className="text-muted-foreground">anonymous</span>}</span>
+          <span className="block max-w-[14rem] truncate font-medium" title={u.external_id ?? undefined}>
+            {u.external_id || <span className="text-muted-foreground">anonymous</span>}
+          </span>
         </div>
       ),
     },
@@ -62,7 +64,7 @@ export default function UsersPage() {
 
       <Card>
         <div className="border-b border-border p-4">
-          <SearchInput value={search} onChange={setSearch} placeholder="Search by external ID…" className="max-w-sm" />
+          <SearchInput value={search} onChange={setSearch} placeholder="Search by external ID…" className="sm:max-w-sm" />
         </div>
         {query.isLoading ? (
           <TableSkeleton rows={8} cols={6} />

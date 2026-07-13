@@ -26,11 +26,12 @@ html[data-theme="dark"]{
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:84px}
-body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.65;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+html{scroll-behavior:smooth;scroll-padding-top:84px;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.65;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s;overflow-x:clip;-webkit-tap-highlight-color:transparent}
 a{color:inherit;text-decoration:none}
 img{max-width:100%}
 ::selection{background:rgba(124,92,255,.3)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 
@@ -55,10 +56,12 @@ html[data-theme="dark"] .icon-moon{display:none}
 
 /* hamburger + mobile menu */
 .menu-btn{display:none;width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--card);cursor:pointer;color:var(--text);place-items:center}
-.mobile-menu{display:none;position:fixed;inset:66px 0 auto 0;z-index:99;background:var(--bg-2);border-bottom:1px solid var(--border);padding:14px 24px 20px;flex-direction:column;gap:4px;box-shadow:var(--shadow-2)}
+.menu-btn[aria-expanded="true"]{color:var(--brand);border-color:color-mix(in srgb,var(--brand) 40%,var(--border));background:var(--tile)}
+.mobile-menu{display:none;position:fixed;inset:66px 0 auto 0;z-index:99;background:var(--bg-2);border-bottom:1px solid var(--border);padding:14px 24px 20px;flex-direction:column;gap:4px;box-shadow:var(--shadow-2);max-height:calc(100vh - 66px);max-height:calc(100dvh - 66px);overflow-y:auto;overscroll-behavior:contain}
 .mobile-menu.open{display:flex;animation:dropIn .25s var(--ease)}
-.mobile-menu a{padding:11px 10px;border-radius:10px;font-weight:500}
+.mobile-menu a{display:flex;align-items:center;min-height:44px;padding:10px 12px;border-radius:10px;font-weight:500;font-size:1rem}
 .mobile-menu a:hover{background:var(--tile)}
+.mobile-menu .btn{justify-content:center;font-weight:650}
 
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:650;border-radius:12px;padding:11px 20px;font-size:.95rem;cursor:pointer;border:0;transition:transform .18s var(--ease),box-shadow .18s,background .18s,color .18s;will-change:transform}
@@ -88,8 +91,9 @@ html[data-theme="dark"] .icon-moon{display:none}
 .code-head{display:flex;align-items:center;gap:7px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);font:.78rem var(--mono);color:#8b96ad}
 .code-head .dots{display:flex;gap:6px}
 .code-head .dots i{width:10px;height:10px;border-radius:99px;display:block}
-.code pre{padding:18px 20px;overflow-x:auto;font:.85rem/1.7 var(--mono)}
+.code pre{padding:18px 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;font:.85rem/1.7 var(--mono)}
 .copy-btn{position:absolute;top:9px;right:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#aeb9cf;border-radius:8px;padding:4px 10px;font:.72rem var(--font);cursor:pointer;transition:background .2s}
+.copy-btn::after{content:"";position:absolute;inset:-10px} /* ≥44px touch target without visual bulk */
 .copy-btn:hover{background:rgba(255,255,255,.14)}
 .copy-btn.ok{color:#4ade80;border-color:rgba(74,222,128,.4)}
 .tk-k{color:#c792ea}.tk-s{color:#9ece6a}.tk-f{color:#7aa2f7}.tk-c{color:#5b6785}.tk-n{color:#ff9e64}
@@ -144,6 +148,8 @@ footer{border-top:1px solid var(--border);padding:52px 0 40px;margin-top:40px;ba
 .docs-body th,.docs-body td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
 .docs-body th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
 .docs-body code:not(.code code){font:.85em var(--mono);background:var(--tile);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px 0}
+.docs-body .table-scroll table{margin:0;min-width:560px} /* wide tables scroll inside the wrapper, never the page */
 .callout{display:flex;gap:12px;border:1px solid;border-radius:14px;padding:14px 16px;margin:16px 0;font-size:.93rem}
 .callout.info{border-color:color-mix(in srgb,var(--brand) 40%,transparent);background:color-mix(in srgb,var(--brand) 7%,transparent)}
 .callout.warn{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.08)}
@@ -153,14 +159,47 @@ footer{border-top:1px solid var(--border);padding:52px 0 40px;margin-top:40px;ba
 .badge .dot{width:7px;height:7px;border-radius:99px;background:var(--green);animation:pulse-ring 2.2s infinite}
 .kbd{font:.8em var(--mono);border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:1px 6px;background:var(--tile)}
 
+/* ---------- responsive ----------
+   Breakpoints: 900 (nav/docs/footer collapse) · 640 (phones) · 420 (small phones).
+   Desktop >900px is untouched. */
 @media (max-width:900px){
   .nav-links{display:none}
   .menu-btn{display:grid}
+  .theme-btn,.menu-btn{width:44px;height:44px}
+  .nav-cta .btn-ghost{display:none} /* Log in lives in the mobile menu */
+  .btn-sm{min-height:44px}
   .foot-grid{grid-template-columns:1fr 1fr}
-  .docs-layout{grid-template-columns:1fr}
-  .docs-side{position:static;max-height:none;display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  /* docs: sidebar becomes a sticky, horizontally scrollable section strip */
+  .docs-layout{display:block;padding:18px 0 64px}
+  .docs-side{position:sticky;top:66px;z-index:90;max-height:none;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -24px 26px;padding:10px 24px;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+  .docs-side::-webkit-scrollbar{display:none}
   .docs-side h5{display:none}
-  .docs-side a{white-space:nowrap;border-left:0;border-bottom:2px solid transparent}
+  .docs-side a{display:flex;align-items:center;min-height:44px;padding:8px 13px;white-space:nowrap;flex-shrink:0;border-left:0}
+  .docs-body section{scroll-margin-top:56px} /* adds to html scroll-padding (84px) → clears nav + strip */
+}
+@media (max-width:640px){
+  .btn-lg{padding:13px 22px;font-size:1rem}
+  .card{padding:22px}
+  .tabs{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab{min-height:44px;padding:10px 16px}
+  .code pre{padding:15px 16px;font-size:.8rem}
+  .code-head{padding-right:76px} /* keep filenames clear of the copy button */
+  .copy-btn{padding:6px 12px}
+  .docs-body h2{font-size:1.45rem;margin:44px 0 8px}
+  .docs-body code:not(.code code){overflow-wrap:anywhere}
+  footer{padding:44px 0 36px}
+  .foot-grid{gap:24px}
+  .foot-grid>div:first-child{grid-column:1/-1}
+  .foot-grid a{padding:9px 0}
+}
+@media (max-width:420px){
+  .wrap{padding:0 20px}
+  .nav-in{gap:12px}
+  .nav-cta{gap:8px}
+  .nav-cta .btn-primary{display:none} /* Sign up lives in the mobile menu */
+  .logo{font-size:1.05rem}
+  .mobile-menu{padding:12px 20px 18px}
+  .docs-side{margin:0 -20px 26px;padding-left:20px;padding-right:20px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}

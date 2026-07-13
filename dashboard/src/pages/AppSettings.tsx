@@ -46,16 +46,16 @@ function FcmStatusCard({ app }: { app: Application }) {
 
       <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
         <div className="flex items-baseline justify-between gap-2 sm:block">
-          <dt className="text-xs text-muted-foreground">Connected project</dt>
-          <dd className="font-mono text-xs">{fcm?.project_id ?? '—'}</dd>
+          <dt className="shrink-0 text-xs text-muted-foreground">Connected project</dt>
+          <dd className="break-all text-right font-mono text-xs sm:text-left">{fcm?.project_id ?? '—'}</dd>
         </div>
         <div className="flex items-baseline justify-between gap-2 sm:block">
-          <dt className="text-xs text-muted-foreground">Sender ID</dt>
-          <dd className="font-mono text-xs">{fcm?.sender_id ?? '—'}</dd>
+          <dt className="shrink-0 text-xs text-muted-foreground">Sender ID</dt>
+          <dd className="break-all text-right font-mono text-xs sm:text-left">{fcm?.sender_id ?? '—'}</dd>
         </div>
         <div className="flex items-baseline justify-between gap-2 sm:block">
-          <dt className="text-xs text-muted-foreground">Package name</dt>
-          <dd className="font-mono text-xs">{fcm?.package_name ?? '—'}</dd>
+          <dt className="shrink-0 text-xs text-muted-foreground">Package name</dt>
+          <dd className="break-all text-right font-mono text-xs sm:text-left">{fcm?.package_name ?? '—'}</dd>
         </div>
         <div className="flex items-baseline justify-between gap-2 sm:block">
           <dt className="text-xs text-muted-foreground">Last synced</dt>
@@ -185,7 +185,7 @@ export default function AppSettings() {
               <div>
                 <Label>Application ID (App ID)</Label>
                 <div className="flex gap-2">
-                  <Input readOnly value={app.id} className="font-mono text-xs" />
+                  <Input readOnly value={app.id} className="min-w-0 font-mono sm:text-xs" />
                   <Button
                     type="button"
                     variant="outline"
@@ -233,9 +233,9 @@ export default function AppSettings() {
                 <p className="mt-1 text-xs text-muted-foreground">Set 0 for unlimited (subject to FCM quotas).</p>
               </div>
             </CardContent>
-            <CardFooter className="justify-between">
+            <CardFooter className="flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-muted-foreground">Created {formatDate(app.created_at)}</p>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
                 {saBlocking && (
                   <p className="text-xs text-red-600 dark:text-red-400">Fix the service-account JSON to save.</p>
                 )}
@@ -255,6 +255,7 @@ export default function AppSettings() {
               <Button
                 type="button"
                 variant="danger"
+                className="w-full sm:w-auto"
                 loading={remove.isPending}
                 onClick={async () => {
                   const ok = await confirmDialog({

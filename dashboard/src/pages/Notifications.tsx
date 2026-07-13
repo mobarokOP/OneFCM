@@ -103,7 +103,7 @@ export default function Notifications() {
           <button
             type="button"
             title="Duplicate — edit and send again"
-            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            className="rounded-lg p-3 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary sm:p-2"
             onClick={(e) => {
               e.stopPropagation()
               setInitial({
@@ -122,7 +122,7 @@ export default function Notifications() {
           <button
             type="button"
             title="Delete notification"
-            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500 disabled:opacity-50"
+            className="rounded-lg p-3 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-500 disabled:opacity-50 sm:p-2"
             disabled={remove.isPending}
             onClick={async (e) => {
               e.stopPropagation()

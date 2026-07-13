@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { AlertTriangle, Trash2, ShieldAlert } from 'lucide-react'
@@ -49,6 +49,26 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     setOptions(null)
   }
 
+  // While open: lock body scroll and close on Escape regardless of focus.
+  const isOpen = options !== null
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        resolver.current?.(false)
+        resolver.current = null
+        setOptions(null)
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [isOpen])
+
   const tone = options?.tone ?? 'danger'
   const Icon = icons[options?.icon ?? (tone === 'danger' ? 'trash' : 'warning')]
 
@@ -57,15 +77,12 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       {children}
       {options &&
         createPortal(
-          <div
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-            onKeyDown={(e) => e.key === 'Escape' && close(false)}
-          >
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <div className="fixed inset-0 animate-fade-in bg-black/50 backdrop-blur-sm" onClick={() => close(false)} aria-hidden />
             <div
               role="alertdialog"
               aria-modal="true"
-              className="relative z-10 w-full max-w-sm animate-scale-in rounded-2xl border border-border bg-card p-6 shadow-overlay"
+              className="relative z-10 max-h-[85dvh] w-full max-w-sm animate-scale-in overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-5 shadow-overlay sm:p-6"
             >
               <div
                 className={cn(

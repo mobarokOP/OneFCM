@@ -14,7 +14,7 @@ interface StatCardProps {
 export function StatCard({ label, value, icon: Icon, delta, hint }: StatCardProps) {
   const positive = (delta ?? 0) >= 0
   return (
-    <Card className="p-5 transition-shadow duration-200 hover:shadow-pop">
+    <Card className="p-4 transition-shadow duration-200 hover:shadow-pop sm:p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         {Icon && (

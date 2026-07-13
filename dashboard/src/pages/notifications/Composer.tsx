@@ -241,15 +241,17 @@ export function Composer({ open, onClose, appId, initial }: ComposerProps) {
                 <div key={i} className="flex gap-2">
                   <Input
                     placeholder="key"
+                    className="min-w-0"
                     value={kv.key}
                     onChange={(e) => setData((d) => d.map((x, j) => (j === i ? { ...x, key: e.target.value } : x)))}
                   />
                   <Input
                     placeholder="value"
+                    className="min-w-0"
                     value={kv.value}
                     onChange={(e) => setData((d) => d.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))}
                   />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => setData((d) => d.filter((_, j) => j !== i))}>
+                  <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => setData((d) => d.filter((_, j) => j !== i))}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -258,18 +260,18 @@ export function Composer({ open, onClose, appId, initial }: ComposerProps) {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <div>
+            <div className="min-w-0">
               <Label htmlFor="n-priority">Priority</Label>
               <Select id="n-priority" value={priority} onChange={(e) => setPriority(e.target.value as 'high' | 'normal')}>
                 <option value="high">High</option>
                 <option value="normal">Normal</option>
               </Select>
             </div>
-            <div>
+            <div className="min-w-0">
               <Label htmlFor="n-ttl">TTL (seconds)</Label>
               <Input id="n-ttl" type="number" min={0} value={ttl} onChange={(e) => setTtl(Number(e.target.value))} />
             </div>
-            <div>
+            <div className="min-w-0">
               <Label htmlFor="n-channel">Channel ID</Label>
               <Input id="n-channel" value={channelId} onChange={(e) => setChannelId(e.target.value)} placeholder="default" />
             </div>
@@ -372,8 +374,8 @@ export function Composer({ open, onClose, appId, initial }: ComposerProps) {
           </div>
         </div>
 
-        {/* Right: live device preview (sticky) */}
-        <div className="lg:col-span-2">
+        {/* Right: live device preview (sticky on desktop, stacked below the form on mobile) */}
+        <div className="border-t border-border pt-5 lg:col-span-2 lg:border-t-0 lg:pt-0">
           <div className="lg:sticky lg:top-0">
             <Label>Preview</Label>
             <DevicePreview title={title} body={body} imageUrl={imageUrl || undefined} />

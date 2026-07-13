@@ -53,12 +53,27 @@ export default function NotificationDetail() {
   const cancelable = n && ['queued', 'scheduled'].includes(n.status)
 
   const logColumns: Column<DeliveryLog>[] = [
-    { key: 'device', header: 'Device', render: (l) => <span className="font-mono text-xs">{l.device_id}</span> },
+    {
+      key: 'device',
+      header: 'Device',
+      render: (l) => (
+        <span className="inline-block max-w-[14rem] truncate align-bottom font-mono text-xs" title={l.device_id}>
+          {l.device_id}
+        </span>
+      ),
+    },
     { key: 'status', header: 'Status', render: (l) => <StatusBadge status={l.status} /> },
     {
       key: 'fcm',
       header: 'FCM message ID',
-      render: (l) => <span className="font-mono text-xs text-muted-foreground">{l.fcm_message_id || '—'}</span>,
+      render: (l) => (
+        <span
+          className="inline-block max-w-[16rem] truncate align-bottom font-mono text-xs text-muted-foreground"
+          title={l.fcm_message_id || undefined}
+        >
+          {l.fcm_message_id || '—'}
+        </span>
+      ),
     },
     {
       key: 'error',
@@ -89,7 +104,7 @@ export default function NotificationDetail() {
           title={n?.title || 'Notification'}
           description={n ? `Created ${formatDateTime(n.created_at)}` : undefined}
           actions={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {n && <StatusBadge status={n.status} />}
               {n && (
                 <Button
@@ -123,7 +138,7 @@ export default function NotificationDetail() {
         />
       )}
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-5">
         <StatCard label="Sent" value={formatNumber(stats?.sent)} icon={Send} />
         <StatCard label="Delivered" value={formatNumber(stats?.delivered)} icon={CheckCircle2} />
         <StatCard label="Opened" value={formatNumber(stats?.opened)} icon={MousePointerClick} />
@@ -158,7 +173,7 @@ export default function NotificationDetail() {
         </Card>
 
         <Card className="lg:col-span-2">
-          <CardHeader className="flex-row items-center justify-between">
+          <CardHeader className="flex-row flex-wrap items-center justify-between gap-2">
             <CardTitle>Delivery logs</CardTitle>
             <Select
               value={statusFilter}
@@ -166,7 +181,7 @@ export default function NotificationDetail() {
                 setStatusFilter(e.target.value)
                 setLogPage(1)
               }}
-              className="h-9 w-40"
+              className="h-9 w-full sm:w-40"
             >
               <option value="">All statuses</option>
               <option value="delivered">Delivered</option>

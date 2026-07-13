@@ -53,14 +53,14 @@ export default function Topics() {
           {topics.map((t) => (
             <Card key={t.name}>
               <CardContent className="pt-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                       <Radio className="h-4 w-4" />
                     </span>
-                    <span className="font-medium">{t.name}</span>
+                    <span className="truncate font-medium" title={t.name}>{t.name}</span>
                   </div>
-                  <span className="text-lg font-semibold">{formatNumber(t.subscribers)}</span>
+                  <span className="shrink-0 text-lg font-semibold">{formatNumber(t.subscribers)}</span>
                 </div>
                 <div className="mt-4">
                   <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">

@@ -41,7 +41,7 @@ export function AuthShell({ title, subtitle, children }: { title: string; subtit
         <div className="flex justify-end p-4">
           <ThemeToggle />
         </div>
-        <div className="flex flex-1 items-center justify-center px-6 pb-16">
+        <div className="flex flex-1 items-center justify-center px-5 pb-12 sm:px-6 sm:pb-16">
           <div className="w-full max-w-sm">
             <div className="mb-8 lg:hidden">
               <div className="flex items-center gap-2.5">

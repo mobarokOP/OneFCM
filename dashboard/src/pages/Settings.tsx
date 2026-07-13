@@ -58,12 +58,12 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="mb-5 flex items-center gap-4">
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground">
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary text-xl font-semibold text-primary-foreground">
                 {initials(user?.name)}
               </span>
-              <div>
-                <p className="font-semibold">{user?.name}</p>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
+              <div className="min-w-0">
+                <p className="truncate font-semibold" title={user?.name}>{user?.name}</p>
+                <p className="truncate text-sm text-muted-foreground" title={user?.email}>{user?.email}</p>
               </div>
             </div>
             <form

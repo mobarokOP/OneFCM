@@ -63,9 +63,13 @@ export default function Devices() {
       key: 'device',
       header: 'Device',
       render: (d) => (
-        <div>
-          <p className="font-mono text-xs">{d.id}</p>
-          {d.external_id && <p className="text-xs text-muted-foreground">user: {d.external_id}</p>}
+        <div className="min-w-0">
+          <p className="max-w-[15rem] truncate font-mono text-xs" title={d.id}>{d.id}</p>
+          {d.external_id && (
+            <p className="max-w-[15rem] truncate text-xs text-muted-foreground" title={d.external_id}>
+              user: {d.external_id}
+            </p>
+          )}
         </div>
       ),
     },

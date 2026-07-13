@@ -69,7 +69,7 @@ export function ServiceAccountInput({ value, onChange, id = 'fcm_service_account
 
   return (
     <div className={cn('space-y-2', className)}>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
           ref={fileRef}
           type="file"
@@ -94,7 +94,7 @@ export function ServiceAccountInput({ value, onChange, id = 'fcm_service_account
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         placeholder='{ "type": "service_account", "project_id": "...", "client_email": "...", "private_key": "..." }'
-        className="font-mono text-xs"
+        className="font-mono sm:text-xs"
       />
 
       {hasInput && parsed.ok && (

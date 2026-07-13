@@ -32,10 +32,10 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md lg:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center gap-2 border-b border-border bg-background/80 px-3 backdrop-blur-md sm:gap-3 sm:px-4 lg:px-6">
       <button
         onClick={onMenu}
-        className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+        className="shrink-0 rounded-lg p-2.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
         aria-label="Open menu"
       >
         <Menu className="h-5 w-5" />
@@ -43,7 +43,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
 
       <AppSwitcher />
 
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
         <ThemeToggle />
 
         <div className="relative" ref={ref}>
@@ -69,7 +69,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           </button>
 
           {open && (
-            <div className="absolute right-0 top-full z-40 mt-1.5 w-56 origin-top-right animate-dropdown-in rounded-xl border border-border bg-card p-1.5 shadow-overlay">
+            <div className="absolute right-0 top-full z-40 mt-1.5 w-56 max-w-[calc(100vw-1.5rem)] origin-top-right animate-dropdown-in rounded-xl border border-border bg-card p-1.5 shadow-overlay">
               <div className="px-2 py-2">
                 <p className="truncate text-sm font-medium">{user?.name}</p>
                 <p className="truncate text-xs text-muted-foreground">{user?.email}</p>

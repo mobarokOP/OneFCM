@@ -20,8 +20,16 @@ interface TableProps<T> {
 
 export function Table<T>({ columns, rows, rowKey, onRowClick, empty }: TableProps<T>) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-sm">
+    // Horizontal scrolling happens inside the card, never at page level.
+    <div className="w-full overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch]">
+      <table
+        className={cn(
+          'w-full border-collapse text-sm',
+          // Keep columns comfortably spaced on narrow screens; the empty
+          // state stays full-width so it centers in the visible area.
+          rows.length > 0 && 'min-w-[40rem]',
+        )}
+      >
         <thead>
           <tr className="border-b border-border bg-muted/40 text-left">
             {columns.map((c) => (
@@ -80,7 +88,7 @@ export function Pagination({ page, perPage, total, onPageChange }: PaginationPro
   const from = total === 0 ? 0 : (page - 1) * perPage + 1
   const to = Math.min(page * perPage, total)
   return (
-    <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground">
+    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border px-4 py-3 text-sm text-muted-foreground">
       <span className="tabular-nums">
         {from}–{to} of {total}
       </span>

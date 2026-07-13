@@ -112,32 +112,34 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          'flex h-10 w-full items-center gap-2 rounded-xl border bg-background px-3 text-sm transition-colors',
+          'flex h-10 w-full items-center gap-2 rounded-xl border bg-background px-3 text-base transition-colors sm:text-sm',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           open ? 'border-primary ring-2 ring-ring' : 'border-input hover:border-muted-foreground/40',
         )}
       >
-        <CalendarClock className="h-4 w-4 text-muted-foreground" />
+        <CalendarClock className="h-4 w-4 shrink-0 text-muted-foreground" />
         {display ? (
-          <span className="tabular-nums">{display}</span>
+          <span className="truncate tabular-nums">{display}</span>
         ) : (
-          <span className="text-muted-foreground">{placeholder}</span>
+          <span className="truncate text-muted-foreground">{placeholder}</span>
         )}
         {value && (
           <span
             role="button"
             tabIndex={-1}
             onClick={(e) => { e.stopPropagation(); onChange('') }}
-            className="ml-auto rounded p-0.5 text-muted-foreground hover:text-foreground"
+            className="-mr-1 ml-auto shrink-0 rounded-md p-1.5 text-muted-foreground hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
           </span>
         )}
       </button>
 
-      {/* Popover */}
+      {/* Popover. Mobile: opens downward (reachable inside scrollable modal
+          bodies) and never wider than the viewport. Desktop (sm+): opens
+          upward as before. */}
       {open && (
-        <div className="absolute bottom-full left-0 z-50 mb-2 w-[290px] animate-scale-in rounded-2xl border border-border bg-card p-3 shadow-overlay">
+        <div className="absolute left-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] max-w-full animate-scale-in rounded-2xl border border-border bg-card p-3 shadow-overlay sm:bottom-full sm:top-auto sm:mb-2 sm:mt-0 sm:w-[290px] sm:max-w-none">
           {/* Quick presets */}
           <div className="mb-3 grid grid-cols-3 gap-1.5">
             {presets.map((p) => (
@@ -145,7 +147,7 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
                 key={p.label}
                 type="button"
                 onClick={() => preset(p.get())}
-                className="rounded-lg border border-border px-1 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:bg-accent hover:text-foreground"
+                className="rounded-lg border border-border px-1 py-2 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:bg-accent hover:text-foreground sm:py-1.5"
               >
                 {p.label}
               </button>
@@ -154,11 +156,11 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
 
           {/* Month header */}
           <div className="mb-2 flex items-center justify-between px-1">
-            <button type="button" onClick={() => monthNav(-1)} className="rounded-lg p-1.5 hover:bg-muted">
+            <button type="button" onClick={() => monthNav(-1)} aria-label="Previous month" className="rounded-lg p-2.5 hover:bg-muted sm:p-1.5">
               <ChevronLeft className="h-4 w-4" />
             </button>
             <span className="text-sm font-semibold">{MONTHS[viewMonth]} {viewYear}</span>
-            <button type="button" onClick={() => monthNav(1)} className="rounded-lg p-1.5 hover:bg-muted">
+            <button type="button" onClick={() => monthNav(1)} aria-label="Next month" className="rounded-lg p-2.5 hover:bg-muted sm:p-1.5">
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -178,7 +180,8 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
                   disabled={isPast(d)}
                   onClick={() => setDatePart(d)}
                   className={cn(
-                    'mx-auto flex h-8 w-8 items-center justify-center rounded-full text-xs transition-colors',
+                    // ≥40px touch targets on mobile; compact on desktop.
+                    'mx-auto flex h-10 w-full max-w-10 items-center justify-center rounded-full text-sm transition-colors sm:h-8 sm:w-8 sm:text-xs',
                     isPast(d) && 'text-muted-foreground/35',
                     !isPast(d) && 'hover:bg-muted',
                     selected && sameDay(d, selected) && 'bg-primary font-semibold text-primary-foreground hover:bg-primary',
@@ -199,7 +202,7 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
             <select
               value={selected ? selected.getHours() : ''}
               onChange={(e) => setTimePart(Number(e.target.value), selected?.getMinutes() ?? 0)}
-              className="h-9 flex-1 rounded-lg border border-input bg-background px-2 text-sm tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-2 text-base tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9 sm:text-sm"
             >
               <option value="" disabled>HH</option>
               {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{pad(h)}</option>)}
@@ -208,7 +211,7 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
             <select
               value={selected ? selected.getMinutes() : ''}
               onChange={(e) => setTimePart(selected?.getHours() ?? 9, Number(e.target.value))}
-              className="h-9 flex-1 rounded-lg border border-input bg-background px-2 text-sm tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-2 text-base tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-9 sm:text-sm"
             >
               <option value="" disabled>MM</option>
               {Array.from({ length: 60 }, (_, m) => <option key={m} value={m}>{pad(m)}</option>)}
@@ -216,7 +219,7 @@ export function DateTimePicker({ value, onChange, placeholder = 'Pick date & tim
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="h-9 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-transform active:scale-[0.97]"
+              className="h-10 shrink-0 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-transform active:scale-[0.97] sm:h-9"
             >
               Done
             </button>

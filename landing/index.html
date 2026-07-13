@@ -120,8 +120,24 @@ main section{padding:96px 0}
 }
 @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){
-  .hero{padding:64px 0 56px}
-  .feat-grid{grid-template-columns:1fr}
+  .hero{padding:56px 0 48px}
+  .hero h1{font-size:clamp(1.9rem,8.5vw,2.4rem)}
+  .hero-mark{width:60px;height:60px;border-radius:16px;margin-bottom:20px}
+  .hero .sub{font-size:1.05rem}
+  .hero-note code{overflow-wrap:anywhere}
+  .stats{gap:12px}
+  .stat{padding:18px 10px}
+  .stat b{font-size:1.35rem}
+  .feat-grid{grid-template-columns:1fr;gap:14px;margin-top:40px}
+  .feat-grid p{font-size:1rem}
+  .how-list{margin-top:40px}
+  .step-body{padding-bottom:36px}
+  .step-body p{font-size:1rem}
+  .step-body code{overflow-wrap:anywhere}
+  .faq summary{padding:16px 18px;font-size:1rem}
+  .faq .faq-a{padding:0 18px 18px;font-size:1rem}
+  .faq .faq-a code{overflow-wrap:anywhere}
+  .banner{padding:52px 22px}
   .phone{width:250px}
   .phone-screen{height:480px}
   .p-clock{margin-top:44px}
@@ -130,6 +146,14 @@ main section{padding:96px 0}
   .wave-ring.r3{width:490px;height:490px;margin:-245px 0 0 -245px}
   .fly-chip.bl{left:0;bottom:72px}
   .fly-chip.tr{right:0;top:84px}
+}
+@media (max-width:480px){
+  main section{padding:60px 0}
+  .hero{padding:48px 0 40px}
+  .hero-cta{flex-direction:column;align-items:stretch}
+  .hero-cta .btn{width:100%}
+  .phone{width:236px}
+  .phone-screen{height:452px}
 }
 </style>
 </head>
@@ -160,6 +184,7 @@ main section{padding:96px 0}
   <a href="index.html#how">How it works</a>
   <a href="docs.html">Docs</a>
   <a href="https://github.com/mobarokOP/OneFCM">GitHub</a>
+  <a class="btn btn-ghost" style="margin-top:10px" href="https://dashboard.onefcm.com/login">Log in</a>
   <a class="btn btn-primary" style="margin-top:8px" href="https://dashboard.onefcm.com/register">Sign up free</a>
 </div>
 

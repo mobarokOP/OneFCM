@@ -78,11 +78,11 @@ export default function Analytics() {
         title="Analytics"
         description="Delivery and engagement performance."
         actions={
-          <Select value={range} onChange={(e) => setRange(e.target.value)} options={ranges} className="w-44" />
+          <Select value={range} onChange={(e) => setRange(e.target.value)} options={ranges} className="w-full sm:w-44" />
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {query.isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
         ) : (

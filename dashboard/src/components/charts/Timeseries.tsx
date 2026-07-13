@@ -33,7 +33,7 @@ export function TimeseriesChart({ data, height = 280 }: { data: TimeseriesPoint[
           ))}
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} vertical={false} />
-        <XAxis dataKey="date" tickFormatter={tick} tick={{ fontSize: 12, fill: CHART.axis }} axisLine={false} tickLine={false} minTickGap={24} />
+        <XAxis dataKey="date" tickFormatter={tick} tick={{ fontSize: 12, fill: CHART.axis }} axisLine={false} tickLine={false} minTickGap={32} />
         <YAxis tick={{ fontSize: 12, fill: CHART.axis }} axisLine={false} tickLine={false} width={44} />
         <Tooltip
           contentStyle={{

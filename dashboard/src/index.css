@@ -40,9 +40,20 @@
     @apply border-border;
   }
 
+  html {
+    /* Keep iOS/Android from inflating text in landscape. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Safety net: stray wide content must never make the page pan sideways.
+       `clip` (unlike `hidden`) does not create a scroll container, so
+       position: sticky keeps working. */
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: 'cv11', 'ss01';
+    overflow-x: clip;
   }
 
   ::selection {

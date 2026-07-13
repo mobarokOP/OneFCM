@@ -8,7 +8,7 @@ export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>
 
 export function StatCardSkeleton() {
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-9 w-9 rounded-xl" />

@@ -87,6 +87,7 @@ export default function Keys() {
         <Button
           variant="ghost"
           size="sm"
+          className="h-10 sm:h-8"
           onClick={async () => {
             const ok = await confirmDialog({
               title: `Revoke "${k.name}"?`,
@@ -186,8 +187,8 @@ export default function Keys() {
             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
             <span>Store this secret securely. You won&apos;t be able to see it again after closing this dialog.</span>
           </div>
-          <div className="flex gap-2">
-            <Input readOnly value={newKey?.key ?? ''} className="font-mono text-xs" />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input readOnly value={newKey?.key ?? ''} className="min-w-0 font-mono sm:text-xs" />
             <Button
               variant="outline"
               onClick={async () => {

@@ -21,7 +21,8 @@ const variants: Record<Variant, string> = {
 }
 
 const sizes: Record<Size, string> = {
-  sm: 'h-8 px-3 text-sm gap-1.5',
+  // sm is 36px on touch screens for a comfortable target, 32px from sm up.
+  sm: 'h-9 sm:h-8 px-3 text-sm gap-1.5',
   md: 'h-10 px-4 text-sm gap-2',
   lg: 'h-11 px-6 text-base gap-2',
   icon: 'h-10 w-10',

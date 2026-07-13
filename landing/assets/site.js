@@ -52,19 +52,47 @@
     const menuBtn = document.querySelector('.menu-btn');
     const mobile = document.querySelector('.mobile-menu');
     if (menuBtn && mobile) {
-      menuBtn.addEventListener('click', () => mobile.classList.toggle('open'));
-      mobile.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => mobile.classList.remove('open')));
+      if (!mobile.id) mobile.id = 'mobile-menu';
+      menuBtn.setAttribute('aria-controls', mobile.id);
+      menuBtn.setAttribute('aria-expanded', 'false');
+      const setMenu = (open) => {
+        mobile.classList.toggle('open', open);
+        menuBtn.setAttribute('aria-expanded', String(open));
+      };
+      menuBtn.addEventListener('click', () => setMenu(!mobile.classList.contains('open')));
+      mobile.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+      // close on outside tap
+      document.addEventListener('click', (e) => {
+        if (mobile.classList.contains('open') && !mobile.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false);
+      });
+      // close on Escape, return focus to the button
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobile.classList.contains('open')) { setMenu(false); menuBtn.focus(); }
+      });
+      // never leave the menu stuck open when growing past the mobile breakpoint
+      const desktop = window.matchMedia('(min-width: 901px)');
+      (desktop.addEventListener || desktop.addListener).call(desktop, (e) => e.matches && setMenu(false));
     }
 
     // ---------- docs: active section highlighting ----------
     const sideLinks = document.querySelectorAll('.docs-side a[href^="#"]');
     if (sideLinks.length) {
+      const side = document.querySelector('.docs-side');
+      // when the sidebar renders as the horizontal strip (mobile), keep the active link in view
+      const revealActive = (a) => {
+        if (!side || side.scrollWidth <= side.clientWidth + 4) return;
+        side.scrollTo({ left: a.offsetLeft - (side.clientWidth - a.offsetWidth) / 2, behavior: 'smooth' });
+      };
       const sections = [...sideLinks].map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
       const spy = new IntersectionObserver(
         (entries) => {
           entries.forEach((e) => {
             if (e.isIntersecting) {
-              sideLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+              sideLinks.forEach((a) => {
+                const on = a.getAttribute('href') === '#' + e.target.id;
+                a.classList.toggle('active', on);
+                if (on) revealActive(a);
+              });
             }
           });
         },

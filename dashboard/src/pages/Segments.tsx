@@ -132,14 +132,14 @@ export default function Segments() {
           {query.data?.map((s) => (
             <Card key={s.id} className="flex flex-col">
               <CardContent className="flex flex-1 flex-col pt-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-semibold">{s.name}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold" title={s.name}>{s.name}</p>
                     <Badge tone={s.type === 'dynamic' ? 'primary' : 'muted'} className="mt-1 capitalize">
                       {s.type}
                     </Badge>
                   </div>
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     <p className="text-2xl font-semibold">{formatNumber(s.count)}</p>
                     <p className="text-xs text-muted-foreground">devices</p>
                   </div>
@@ -148,17 +148,17 @@ export default function Segments() {
                 <div className="mt-4 flex-1 space-y-1.5">
                   {s.filters.length === 0 && <p className="text-xs text-muted-foreground">No filters</p>}
                   {s.filters.map((f, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-xs">
-                      <Filter className="h-3 w-3 text-muted-foreground" />
-                      <span className="font-medium">{f.field}</span>
+                    <div key={i} className="flex flex-wrap items-center gap-1.5 text-xs">
+                      <Filter className="h-3 w-3 shrink-0 text-muted-foreground" />
+                      <span className="break-all font-medium">{f.field}</span>
                       <span className="text-muted-foreground">{ops.find((o) => o.value === f.op)?.label ?? f.op}</span>
-                      {f.op !== 'exists' && <span className="rounded bg-muted px-1.5 py-0.5 font-mono">{f.value}</span>}
+                      {f.op !== 'exists' && <span className="break-all rounded bg-muted px-1.5 py-0.5 font-mono">{f.value}</span>}
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-4 flex gap-2 border-t border-border pt-3">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => openEdit(s)}>
+                  <Button variant="outline" size="sm" className="h-10 flex-1 sm:h-8" onClick={() => openEdit(s)}>
                     <Pencil className="h-4 w-4" /> Edit
                   </Button>
                   <Button
@@ -229,9 +229,10 @@ export default function Segments() {
             </div>
             <div className="space-y-2">
               {filters.map((f, i) => (
-                <div key={i} className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2">
+                <div key={i} className="grid grid-cols-[1fr_auto] items-center gap-2 sm:grid-cols-[1fr_auto_1fr_auto]">
                   <Input
                     placeholder="field (e.g. country)"
+                    className="min-w-0"
                     value={f.field}
                     onChange={(e) => setFilters((arr) => arr.map((x, j) => (j === i ? { ...x, field: e.target.value } : x)))}
                   />
@@ -248,6 +249,7 @@ export default function Segments() {
                   </Select>
                   <Input
                     placeholder="value"
+                    className="min-w-0"
                     disabled={f.op === 'exists'}
                     value={f.value ?? ''}
                     onChange={(e) => setFilters((arr) => arr.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)))}
@@ -256,6 +258,7 @@ export default function Segments() {
                     type="button"
                     variant="ghost"
                     size="icon"
+                    className="justify-self-end sm:justify-self-auto"
                     onClick={() => setFilters((arr) => (arr.length > 1 ? arr.filter((_, j) => j !== i) : arr))}
                   >
                     <Trash2 className="h-4 w-4" />

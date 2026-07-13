@@ -151,7 +151,7 @@ export default function Apps() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="h-10 flex-1 sm:h-8"
                     onClick={() => {
                       setSelectedAppId(app.id)
                       navigate('/')
@@ -162,6 +162,7 @@ export default function Apps() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    className="h-10 sm:h-8"
                     onClick={() => navigate(`/apps/${app.id}/settings`)}
                   >
                     <Settings className="h-4 w-4" /> Settings

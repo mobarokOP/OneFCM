@@ -18,7 +18,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <select
         ref={ref}
         className={cn(
-          'flex h-10 w-full cursor-pointer appearance-none rounded-xl border border-input bg-card px-3 pr-9 text-sm text-foreground transition-[border-color,box-shadow,background-color] duration-150 hover:border-muted-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/40',
+          // text-base on mobile (≥16px avoids iOS auto-zoom), text-sm on sm+.
+          'flex h-10 w-full cursor-pointer appearance-none rounded-xl border border-input bg-card px-3 pr-9 text-base sm:text-sm text-foreground transition-[border-color,box-shadow,background-color] duration-150 hover:border-muted-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/40',
           className,
         )}
         {...props}
