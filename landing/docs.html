@@ -8,9 +8,39 @@
 <meta name="theme-color" content="#070a12">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/site.css?v=20260714">
+<link rel="stylesheet" href="assets/site.css?v=20260714b">
 <script>/* prevent theme flash */(function(){var t=localStorage.getItem('onefcm-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)})();</script>
-<script src="assets/site.js?v=20260714" defer></script>
+<script src="assets/site.js?v=20260714b" defer></script>
+<style>
+  /* ---- docs, mobile-only polish; >900px stays pixel-identical (site.css owns desktop) ---- */
+  @media (max-width:900px){
+    /* Scrollable code + tables: edge shadows that appear only while content hides off-screen
+       (cover gradients scroll with the content and mask the shadows at either end). */
+    .code pre{
+      background:
+        linear-gradient(90deg,var(--code-bg) 40%,transparent) left/36px 100% no-repeat local,
+        linear-gradient(270deg,var(--code-bg) 40%,transparent) right/36px 100% no-repeat local,
+        linear-gradient(90deg,rgba(0,0,0,.85),transparent) left/22px 100% no-repeat scroll,
+        linear-gradient(270deg,rgba(0,0,0,.85),transparent) right/22px 100% no-repeat scroll;
+    }
+    .table-scroll{
+      --edge:rgba(12,18,34,.16);
+      background:
+        linear-gradient(90deg,var(--bg) 40%,transparent) left/36px 100% no-repeat local,
+        linear-gradient(270deg,var(--bg) 40%,transparent) right/36px 100% no-repeat local,
+        linear-gradient(90deg,var(--edge),transparent) left/16px 100% no-repeat scroll,
+        linear-gradient(270deg,var(--edge),transparent) right/16px 100% no-repeat scroll;
+    }
+    html[data-theme="dark"] .table-scroll{--edge:rgba(233,237,246,.09)}
+  }
+  @media (max-width:640px){
+    /* Inside scrollable tables, let cells scroll sideways instead of shattering
+       code tokens mid-identifier (overrides site.css overflow-wrap:anywhere). */
+    .docs-body .table-scroll code:not(.code code){overflow-wrap:normal;white-space:nowrap}
+    /* Code-block filenames stay on one line, ellipsized clear of the copy button. */
+    .code-head .code-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  }
+</style>
 </head>
 <body>
 
@@ -123,7 +153,7 @@
         <h2>Install the SDK</h2>
         <p>The SDK is published on JitPack and supports <strong style="color:var(--text)">minSdk 24+</strong>. Add the JitPack repository, then the dependency.</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> settings.gradle.kts</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">settings.gradle.kts</span></div>
           <button class="copy-btn">Copy</button>
           <pre>dependencyResolutionManagement {
     repositories {
@@ -134,10 +164,10 @@
 }</pre>
         </div>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> app/build.gradle.kts</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">app/build.gradle.kts</span></div>
           <button class="copy-btn">Copy</button>
           <pre>dependencies {
-    <span class="tk-f">implementation</span>(<span class="tk-s">"com.github.mobarokOP:OneFCM:1.0.0"</span>)
+    <span class="tk-f">implementation</span>(<span class="tk-s">"com.github.mobarokOP:OneFCM:1.1.0"</span>)
 }</pre>
         </div>
         <div class="callout info">
@@ -151,7 +181,7 @@
         <h2>Initialize</h2>
         <p>Initialize once in your <code>Application</code> class with the App ID you copied in <a href="#create-app" style="color:var(--brand)">Create an application</a>.</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> MyApp.kt</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">MyApp.kt</span></div>
           <button class="copy-btn">Copy</button>
           <pre><span class="tk-k">import</span> android.app.Application
 <span class="tk-k">import</span> com.openfcm.sdk.OpenFCM
@@ -165,7 +195,7 @@
         </div>
         <p>One line is all it takes — the SDK talks to the OneFCM cloud by default. An optional config block customizes channels, icons and logging, or points the SDK at a <strong style="color:var(--text)">self-hosted</strong> server:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> MyApp.kt · optional config</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">MyApp.kt · optional config</span></div>
           <button class="copy-btn">Copy</button>
           <pre>OpenFCM.<span class="tk-f">init</span>(<span class="tk-k">this</span>, appId = <span class="tk-s">"YOUR_APP_ID"</span>) {
     baseUrl = <span class="tk-s">"https://push.example.com"</span> <span class="tk-c">// self-hosted only</span>
@@ -176,7 +206,7 @@
         </div>
         <p>Register the class in your manifest:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> AndroidManifest.xml</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">AndroidManifest.xml</span></div>
           <button class="copy-btn">Copy</button>
           <pre>&lt;<span class="tk-k">application</span>
     <span class="tk-f">android:name</span>=<span class="tk-s">".MyApp"</span>
@@ -193,7 +223,7 @@
         <h2>Notification permission</h2>
         <p>On Android 13+ the runtime permission is <strong style="color:var(--text)">requested automatically</strong> on your first Activity — nothing to do by default. Prefer to control the moment yourself? Opt out and prompt manually:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> Permission.kt</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">Permission.kt</span></div>
           <button class="copy-btn">Copy</button>
           <pre><span class="tk-c">// 1 · Opt out of the automatic prompt in init { }</span>
 OpenFCM.<span class="tk-f">init</span>(<span class="tk-k">this</span>, appId = <span class="tk-s">"YOUR_APP_ID"</span>) {
@@ -214,7 +244,7 @@ OpenFCM.<span class="tk-f">requestNotificationPermission</span>(activity)
         <h2>Users, tags &amp; topics</h2>
         <p>Three lightweight primitives drive all targeting. Call them anywhere — every call is main-thread-safe, queues before init completes, and retries offline via WorkManager.</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> Targeting.kt</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">Targeting.kt</span></div>
           <button class="copy-btn">Copy</button>
           <pre><span class="tk-c">// Users — link this device to your own user id (after sign-in)</span>
 OpenFCM.<span class="tk-f">login</span>(<span class="tk-s">"user_12345"</span>)
@@ -247,7 +277,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         <p>Set the <code>deep_link</code> field when sending (e.g. <code>myapp://book/25</code>). On tap, the SDK first tries to resolve it against an <strong style="color:var(--text)">intent-filter inside your app</strong>; if nothing matches and it's an <code>http(s)</code> URL, it opens the browser instead.</p>
         <p>For full control — including custom <code>data</code> key routing — register a tap handler:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> TapHandler.kt</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">TapHandler.kt</span></div>
           <button class="copy-btn">Copy</button>
           <pre>OpenFCM.<span class="tk-f">setNotificationOpenHandler</span> { payload -&gt;
     <span class="tk-c">// payload.notificationId · payload.deepLink · payload.data[...]</span>
@@ -301,7 +331,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         <p>Send server-to-server with an API key. In the dashboard open <strong style="color:var(--text)">your app → API Keys → New key</strong>. The full key (<code>op_live_…</code>) is <strong style="color:var(--text)">shown once</strong> — store it in a secret manager. Keys belong to one application and can be revoked any time.</p>
         <p>Base URL: <code>https://api.onefcm.com/v1</code> · Content type: <code>application/json</code> · Auth header on every request:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> auth.sh</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">auth.sh</span></div>
           <button class="copy-btn">Copy</button>
           <pre>curl https://api.onefcm.com/v1/notifications/NOTIFICATION_ID \
   -H <span class="tk-s">"Authorization: Bearer op_live_YOUR_API_KEY"</span></pre>
@@ -314,7 +344,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         <h2>Send a notification</h2>
         <p>One endpoint sends everything: <code>POST /v1/notifications</code>. Only <code>app_id</code>, <code>title</code>, <code>body</code>, and <code>audience</code> are required — the rest is optional.</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> send.sh</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">send.sh</span></div>
           <button class="copy-btn">Copy</button>
           <pre>curl -X POST https://api.onefcm.com/v1/notifications \
   -H <span class="tk-s">"Authorization: Bearer op_live_YOUR_API_KEY"</span> \
@@ -336,7 +366,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         </div>
         <p>The response confirms queueing and the resolved audience size:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> 201 · response.json</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">201 · response.json</span></div>
           <button class="copy-btn">Copy</button>
           <pre>{
   <span class="tk-f">"data"</span>: {
@@ -374,7 +404,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         <h2>Scheduling</h2>
         <p>Add a <code>schedule</code> object to any send payload to deliver later instead of now. The response comes back with <code>"status": "scheduled"</code>.</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> schedule.json</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">schedule.json</span></div>
           <button class="copy-btn">Copy</button>
           <pre><span class="tk-c">// One-time delivery</span>
 <span class="tk-f">"schedule"</span>: { <span class="tk-f">"send_at"</span>: <span class="tk-s">"2026-08-01T09:00:00Z"</span> }
@@ -394,13 +424,13 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         <h2>Check status</h2>
         <p>Poll any notification by id to follow delivery and engagement:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> status.sh</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">status.sh</span></div>
           <button class="copy-btn">Copy</button>
           <pre>curl https://api.onefcm.com/v1/notifications/7c9e6679-7425-40de-944b-e07fc1f90ae7 \
   -H <span class="tk-s">"Authorization: Bearer op_live_YOUR_API_KEY"</span></pre>
         </div>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> 200 · response.json</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">200 · response.json</span></div>
           <button class="copy-btn">Copy</button>
           <pre>{
   <span class="tk-f">"data"</span>: {
@@ -472,7 +502,7 @@ OpenFCM.<span class="tk-f">unsubscribeTopic</span>(<span class="tk-s">"announcem
         <h2>Error codes</h2>
         <p>Every error uses one shape:</p>
         <div class="code">
-          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> error.json</div>
+          <div class="code-head"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div> <span class="code-title">error.json</span></div>
           <button class="copy-btn">Copy</button>
           <pre>{
   <span class="tk-f">"error"</span>: {

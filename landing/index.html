@@ -14,9 +14,9 @@
 <link rel="preconnect" href="https://dashboard.onefcm.com">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/site.css?v=20260714">
+<link rel="stylesheet" href="assets/site.css?v=20260714b">
 <script>/* prevent theme flash */(function(){var t=localStorage.getItem('onefcm-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)})();</script>
-<script src="assets/site.js?v=20260714" defer></script>
+<script src="assets/site.js?v=20260714b" defer></script>
 <style>
 /* ===== index.html page-specific (tokens only) ===== */
 main section{padding:96px 0}
@@ -89,7 +89,7 @@ main section{padding:96px 0}
 .step-row:last-child .step-body{padding-bottom:0}
 .step-body h3{font-size:1.08rem;font-weight:700;margin-bottom:4px}
 .step-body p{color:var(--muted);font-size:.95rem}
-.step-body code{font:.84em var(--mono);background:var(--tile);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
+.step-body code{font:.84em var(--mono);background:var(--tile);border:1px solid var(--border);border-radius:6px;padding:2px 7px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .step-body a{color:var(--brand);font-weight:600}
 
 /* faq */
@@ -100,7 +100,7 @@ main section{padding:96px 0}
 .faq .chev{flex-shrink:0;color:var(--muted);transition:transform .3s var(--ease)}
 .faq details[open] .chev{transform:rotate(180deg)}
 .faq .faq-a{padding:0 22px 20px;color:var(--muted);font-size:.94rem;animation:fadeUp .3s var(--ease)}
-.faq .faq-a code{font:.88em var(--mono);background:var(--tile);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
+.faq .faq-a code{font:.88em var(--mono);background:var(--tile);border:1px solid var(--border);border-radius:6px;padding:2px 7px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 
 /* cta banner */
 .banner{position:relative;overflow:hidden;text-align:center;border-radius:var(--radius-lg);padding:68px 28px;border:1px solid color-mix(in srgb,var(--brand) 35%,var(--border));background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 12%,var(--card)),color-mix(in srgb,var(--brand-2) 14%,var(--card)))}
@@ -117,6 +117,11 @@ main section{padding:96px 0}
   .hero .sub{margin-inline:auto}
   .hero-cta{justify-content:center}
   .feat-grid{grid-template-columns:repeat(2,1fr)}
+  /* phone mockup: clamp like real Android so the 2nd card never clips past the screen */
+  .p-notif b,.p-notif span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+  .phone-screen::after{content:"";position:absolute;bottom:9px;left:50%;width:92px;height:4px;margin-left:-46px;border-radius:99px;background:rgba(255,255,255,.22)}
+  .fly-chip.tr{top:84px} /* clear the lock-screen clock once the hero stacks */
+  .stat span{display:block;line-height:1.45}
 }
 @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){
@@ -124,7 +129,8 @@ main section{padding:96px 0}
   .hero h1{font-size:clamp(1.9rem,8.5vw,2.4rem)}
   .hero-mark{width:60px;height:60px;border-radius:16px;margin-bottom:20px}
   .hero .sub{font-size:1.05rem}
-  .hero-note code{overflow-wrap:anywhere}
+  /* gradle one-liner: single rounded block that wraps at <wbr> points instead of mid-token */
+  .hero-note code{display:block;width:fit-content;max-width:100%;margin:8px auto 0;padding:8px 12px;border-radius:10px;line-height:1.55;overflow-wrap:break-word;text-align:left}
   .stats{gap:12px}
   .stat{padding:18px 10px}
   .stat b{font-size:1.35rem}
@@ -138,9 +144,12 @@ main section{padding:96px 0}
   .faq .faq-a{padding:0 18px 18px;font-size:1rem}
   .faq .faq-a code{overflow-wrap:anywhere}
   .banner{padding:52px 22px}
-  .phone{width:250px}
+  .banner h2{line-height:1.15} /* wraps to 2 lines here; body line-height looks detached */
+  .phone{width:264px}
   .phone-screen{height:480px}
   .p-clock{margin-top:44px}
+  .p-notif{padding:11px 12px;gap:9px}
+  .p-notif img{width:28px;height:28px}
   .wave-ring.r1{width:290px;height:290px;margin:-145px 0 0 -145px}
   .wave-ring.r2{width:390px;height:390px;margin:-195px 0 0 -195px}
   .wave-ring.r3{width:490px;height:490px;margin:-245px 0 0 -245px}
@@ -152,7 +161,7 @@ main section{padding:96px 0}
   .hero{padding:48px 0 40px}
   .hero-cta{flex-direction:column;align-items:stretch}
   .hero-cta .btn{width:100%}
-  .phone{width:236px}
+  .phone{width:248px}
   .phone-screen{height:452px}
 }
 </style>
@@ -203,7 +212,7 @@ main section{padding:96px 0}
         <a class="btn btn-primary btn-lg" href="https://dashboard.onefcm.com/register">Sign up free</a>
         <a class="btn btn-ghost btn-lg" href="docs.html">View docs</a>
       </div>
-      <p class="hero-note">The entire install: <code>implementation("com.github.mobarokOP:OneFCM:1.0.0")</code></p>
+      <p class="hero-note">The entire install: <code>implementation(<wbr>"com.github.mobarokOP:<wbr>OneFCM:1.1.0")</code></p>
     </div>
 
     <div class="phone-stage reveal" data-delay="2" aria-hidden="true">
