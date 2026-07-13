@@ -10,6 +10,10 @@ export const authApi = {
     const { data } = await api.post('/auth/register', { name, email, password })
     return data.data
   },
+  async google(credential: string): Promise<AuthResponse> {
+    const { data } = await api.post('/auth/google', { credential })
+    return data.data
+  },
   async logout(): Promise<void> {
     await api.post('/auth/logout')
   },

@@ -12,7 +12,7 @@ class AdminUser extends Authenticatable
 {
     use HasApiTokens, HasUuids, Notifiable;
 
-    protected $fillable = ['account_id', 'name', 'email', 'password', 'role'];
+    protected $fillable = ['account_id', 'name', 'email', 'password', 'role', 'google_id', 'avatar_url'];
 
     protected $hidden = ['password', 'remember_token'];
 

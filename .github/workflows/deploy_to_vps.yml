@@ -66,6 +66,8 @@ jobs:
             cd dashboard
             npm install
             echo "VITE_API_BASE=https://admin.onefcm.com/v1" > .env
+            # Google OAuth client id (public value; the secret is never used).
+            echo "VITE_GOOGLE_CLIENT_ID=840896063980-420ubbj1v4q76etcuo1o7af11donodbd.apps.googleusercontent.com" >> .env
             # aaPanel drops an immutable .user.ini inside dist/ (the site root),
             # which crashes vite's emptyOutDir. Build to a scratch dir and sync
             # the result into dist/, leaving .user.ini untouched.

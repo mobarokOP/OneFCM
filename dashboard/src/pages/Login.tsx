@@ -9,6 +9,7 @@ import { getErrorMessage } from '@/api/client'
 import { useAuth } from '@/store/auth'
 import { Button } from '@/components/ui/Button'
 import { Input, Label, FieldError } from '@/components/ui/Input'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 import { AuthShell } from './AuthShell'
 
 const schema = z.object({
@@ -38,6 +39,17 @@ export default function Login() {
     onError: (err) => toast.error(getErrorMessage(err, 'Login failed')),
   })
 
+  const googleMutation = useMutation({
+    mutationFn: (credential: string) => authApi.google(credential),
+    onSuccess: (data) => {
+      setAuth(data.token, data.user)
+      toast.success(`Welcome back, ${data.user.name || 'admin'}`)
+      const from = (location.state as { from?: string })?.from ?? '/'
+      navigate(from, { replace: true })
+    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Google sign-in failed')),
+  })
+
   return (
     <AuthShell title="Sign in to OneFCM" subtitle="Manage devices, segments and push campaigns.">
       <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
@@ -55,6 +67,18 @@ export default function Login() {
           Sign in
         </Button>
       </form>
+      <div className="mt-4 flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs uppercase text-muted-foreground">or</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+      <div className="mt-4">
+        <GoogleButton
+          text="signin_with"
+          disabled={mutation.isPending || googleMutation.isPending}
+          onCredential={(credential) => googleMutation.mutate(credential)}
+        />
+      </div>
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{' '}
         <Link to="/register" className="font-medium text-primary hover:underline">

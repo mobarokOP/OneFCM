@@ -23,6 +23,7 @@ Single source of truth for backend, dashboard, and Android SDK. All parts build 
 ## A. Dashboard Auth (JWT)
 - `POST /v1/auth/register` `{name,email,password}` → `{data:{token,user}}`
 - `POST /v1/auth/login` `{email,password}` → `{data:{token,user}}`
+- `POST /v1/auth/google` `{credential:<google_id_token>}` → `{data:{token,user}}` (creates account on first sign-in; links by verified email)
 - `POST /v1/auth/logout` (JWT) → `204`
 - `GET  /v1/auth/me` (JWT) → `{data:{user}}`
 

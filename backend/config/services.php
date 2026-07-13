@@ -14,6 +14,11 @@ return [
     |
     */
 
+    'google' => [
+        // OAuth client ID used to verify "Continue with Google" ID tokens.
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

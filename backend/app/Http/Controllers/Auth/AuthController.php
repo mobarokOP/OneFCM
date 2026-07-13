@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AdminUser;
 use App\Models\AuditLog;
+use App\Services\GoogleIdTokenVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,13 @@ class AuthController extends Controller
 
         $user = AdminUser::where('email', $data['email'])->first();
 
+        // Google-only accounts have no local password to check against.
+        if ($user && $user->password === null) {
+            throw ValidationException::withMessages([
+                'email' => ['This account uses Google sign-in. Use "Continue with Google" instead.'],
+            ]);
+        }
+
         if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Invalid credentials.'],
@@ -56,6 +64,66 @@ class AuthController extends Controller
         AuditLog::record('auth.login', $user);
 
         return $this->tokenResponse($user);
+    }
+
+    public function google(Request $request, GoogleIdTokenVerifier $verifier): JsonResponse
+    {
+        $data = $request->validate([
+            'credential' => ['required', 'string'],
+        ]);
+
+        if (empty(config('services.google.client_id'))) {
+            abort(503, 'Google sign-in is not configured on this server.');
+        }
+
+        $claims = $verifier->verify($data['credential']);
+
+        if ($claims === null || empty($claims['sub']) || empty($claims['email'])) {
+            throw ValidationException::withMessages([
+                'credential' => ['Google sign-in could not be verified. Please try again.'],
+            ]);
+        }
+
+        if (! filter_var($claims['email_verified'] ?? false, FILTER_VALIDATE_BOOL)) {
+            throw ValidationException::withMessages([
+                'credential' => ['Your Google account email is not verified.'],
+            ]);
+        }
+
+        [$user, $created] = DB::transaction(function () use ($claims) {
+            $user = AdminUser::where('google_id', $claims['sub'])->first()
+                ?? AdminUser::where('email', $claims['email'])->first();
+
+            if ($user) {
+                // Link the Google identity to the (possibly password-based) account.
+                $user->google_id = $claims['sub'];
+                $user->avatar_url = $claims['picture'] ?? $user->avatar_url;
+                $user->email_verified_at ??= now();
+                $user->save();
+
+                return [$user, false];
+            }
+
+            $account = Account::create(['name' => ($claims['name'] ?? 'My')."'s Team"]);
+
+            $user = new AdminUser([
+                'account_id' => $account->id,
+                'name' => $claims['name'] ?? explode('@', $claims['email'])[0],
+                'email' => $claims['email'],
+                'google_id' => $claims['sub'],
+                'avatar_url' => $claims['picture'] ?? null,
+                'role' => 'owner',
+                'password' => null,
+            ]);
+            $user->email_verified_at = now(); // Google already verified it (not mass-assignable).
+            $user->save();
+
+            return [$user, true];
+        });
+
+        AuditLog::record('auth.google_login', $user);
+
+        return $this->tokenResponse($user, $created ? 201 : 200);
     }
 
     public function me(Request $request): JsonResponse
